@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>WEBIMS</title>
+    <!-- jquery -->
+    <script src="../jquery/jquery-3.1.1.min.js" ></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+
+
+    <style type="text/css">
+        a:link{
+            text-decoration:none;
+            color:#000
+        }
+
+        a:visited{
+            color:black;
+        }
+
+        a:hover{
+            text-decoration:underline;
+            color:#f90;
+        }
+
+        a:active{
+            color:blue;
+        }
+       /* .body{
+            overflow:hidden;
+            background: #f5f5f5 url("../images/bg-2.jpg") no-repeat center;
+        }*/
+
+        .main{
+
+            width: 100%;
+            height: 633px;
+
+            background: url(../images/bg-2.jpg) no-repeat center;
+        }
+
+
+        .rightBox{
+
+            position: absolute;
+            width: 300px;
+            height: 550px;
+            left: 800px;
+            top: 60px;
+            background-color: #f6f7f8;
+
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+
+        }
+
+        #login{
+            padding: 10px;
+            margin-top: 95px;
+
+            background-color: #f6f7f8;
+        }
+
+    </style>
+</head>
+
+
+<body>
+<div class="main" >
+
+    <div class="leftBox">
+
+
+    </div>
+
+    <div class="rightBox">
+        <div id="login">
+            <form>
+                <!-- 注册-->
+                <div class="registe">
+                    <table>
+                        <tr >
+                            <!-- <th style="height: 100px"><h1 align="center" style="color: black"></h1></th> -->
+                            <div id="check" style="display: none;" class="alert alert-danger">账号或密码错误，请重试！</div>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <ul class="nav nav-pills nav-justified">
+                                    <li role="presentation" ><a id="loginA" href="#" style="font-size: 15px;color:#695F56" >登录</a></li>
+                                    <li role="presentation"><a id="registeA" href="#" style="font-size: 15px;color:#695F56">注册</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <!--注册输入框 -->
+                        <div>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="account" type="text" class="form-control "  placeholder="账号（英文）" style="width: 280px">
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <!-- 账号校验信息-->
+                            <tr>
+                                <td>
+                                    <div id="accountCheck" class="alert alert-danger" style="display: none;"></div>
+                                </td>
+                            </tr>
+                            <!-- 账号校验信息-->
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="name" type="text" class="form-control "  placeholder="昵称" style="width: 280px">
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 昵称校验信息-->
+                            <tr>
+                                <td>
+                                    <div id="nameCheck" class="alert alert-danger" style="display: none;"></div>
+                                </td>
+                            </tr>
+                            <!-- 昵称校验信息 -->
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="psd" type="password" class="form-control "  placeholder="密码（不少于6位）" style="width: 280px">
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 密码校验信息-->
+                            <tr>
+                                <td>
+                                    <div id="psdCheck" class="alert alert-danger" style="display: none;"></div>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary" style="width: 280px">注册</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+                        <!--登录输入框-->
+
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <input type="email" class="form-control " id="username" placeholder="账号（英文）" style="width: 280px">
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <input type="email" class="form-control " id="password" placeholder="密码（不少于6位）" style="width: 280px">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <button id="loginBtn" type="button" class="btn btn-primary" style="width: 280px">登录</button>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                    </table>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+<script type="text/javascript">
+
+    $(function(){
+
+        $("div[class='form-group']:gt(3)").hide();
+        //登录页面
+        $("#loginA").bind("click",function(){
+            console.log("隐藏");
+            //隐藏所有校验信息提示
+            $("div[class='alert alert-danger']").hide();
+            $("div[class='form-group']:lt(4)").hide();
+            $("div[class='form-group']:gt(3)").show();
+            //$("div[class='form-group']:lt(4)").show();
+            //$(".login").show();
+        });
+
+        //注册页面
+        $("#registeA").bind("click",function(){
+            $("div[class='form-group']:lt(4)").show();
+            $("div[class='form-group']:gt(3)").hide();
+            //$("div[class='form-group']:lt(4)").show();
+
+        });
+
+        //登录校验
+        $("#loginBtn").bind("click",function(){
+            var username = $("#username").val();
+            console.info(username);
+            var password = $("#password").val();
+            console.info(password);
+
+
+        });
+
+        //注册校验
+        $("#account").bind("blur",function(){
+            var account = $("#account").val();
+            if(account.trim().length < 0 || account.trim() == '') {
+                $("#accountCheck").css("padding","4px").html("账号不能为空").show();
+            }else{
+                $("#accountCheck").hide();
+            }
+
+        });//账号校验
+
+        $("#name").bind("blur",function(){
+            var name = $("#name").val();
+            if(name.trim().length < 0 || name.trim() == ''){
+                $("#nameCheck").css("padding","4px").html("昵称不能为空").show();
+            }else{
+                $("#nameCheck").hide();
+            }
+        });//昵称校验
+
+        $("#psd").bind("blur",function(){
+            var psd = $("#psd").val();
+            if(psd.trim().length < 0 || psd.trim() == ''){
+                $("#psdCheck").css("padding","4px").html("密码不能为空").show();
+            }else{
+                $("#psdCheck").hide();
+            }
+        });//密码校验
+
+
+
+
+
+    });
+</script>
+</html>
