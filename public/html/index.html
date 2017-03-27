@@ -179,7 +179,7 @@
 
 
                     </table>
-                    
+
                 </div>
 
             </form>
@@ -196,6 +196,7 @@
     $(function(){
         //初始化页面效果
         $("div[class='form-group']:gt(3)").hide();
+
         $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
         $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
         $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
@@ -204,7 +205,10 @@
         $("#loginA").bind("click",function(){
             console.log("隐藏");
             //隐藏所有校验信息提示
-            $("div[class='alert alert-danger']").hide();
+            //$("div[class='alert alert-danger']").hide();
+            $("#accountCheck").hide();
+            $("#nameCheck").hide();
+            $("#psdCheck").hide();
 
             $("div[class='form-group']:lt(4)").hide();
             $("div[class='form-group']:gt(3)").show();
@@ -214,6 +218,10 @@
 
         //注册页面
         $("#registeA").bind("click",function(){
+            $("#accountCheck").show();
+            $("#nameCheck").show();
+            $("#psdCheck").show();
+
             $("div[class='form-group']:lt(4)").show();
             $("div[class='form-group']:gt(3)").hide();
             //$("div[class='form-group']:lt(4)").show();
