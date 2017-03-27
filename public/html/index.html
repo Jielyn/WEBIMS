@@ -108,7 +108,7 @@
                             <!-- 账号校验信息-->
                             <tr>
                                 <td>
-                                    <div id="accountCheck" class="alert alert-danger" style="display: none;"></div>
+                                    <div id="accountCheck" style="color:#695F56">账号必须是英文</div>
                                 </td>
                             </tr>
                             <!-- 账号校验信息-->
@@ -122,7 +122,7 @@
                             <!-- 昵称校验信息-->
                             <tr>
                                 <td>
-                                    <div id="nameCheck" class="alert alert-danger" style="display: none;"></div>
+                                    <div id="nameCheck" style="color:#695F56">昵称是必填项</div>
                                 </td>
                             </tr>
                             <!-- 昵称校验信息 -->
@@ -136,7 +136,9 @@
                             <!-- 密码校验信息-->
                             <tr>
                                 <td>
-                                    <div id="psdCheck" class="alert alert-danger" style="display: none;"></div>
+
+                                    <div id="psdCheck" style="color:#695F56">密码必填项</div>
+
                                 </td>
                             </tr>
 
@@ -175,7 +177,9 @@
                         </tr>
 
 
+
                     </table>
+                    
                 </div>
 
             </form>
@@ -190,13 +194,18 @@
 <script type="text/javascript">
 
     $(function(){
-
+        //初始化页面效果
         $("div[class='form-group']:gt(3)").hide();
+        $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
+        $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
+        $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
+
         //登录页面
         $("#loginA").bind("click",function(){
             console.log("隐藏");
             //隐藏所有校验信息提示
             $("div[class='alert alert-danger']").hide();
+
             $("div[class='form-group']:lt(4)").hide();
             $("div[class='form-group']:gt(3)").show();
             //$("div[class='form-group']:lt(4)").show();
@@ -225,7 +234,7 @@
         $("#account").bind("blur",function(){
             var account = $("#account").val();
             if(account.trim().length < 0 || account.trim() == '') {
-                $("#accountCheck").css("padding","4px").html("账号不能为空").show();
+                $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("账号不能为空").attr("class","alert alert-danger");
             }else{
                 $("#accountCheck").hide();
             }
@@ -235,7 +244,7 @@
         $("#name").bind("blur",function(){
             var name = $("#name").val();
             if(name.trim().length < 0 || name.trim() == ''){
-                $("#nameCheck").css("padding","4px").html("昵称不能为空").show();
+                $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("昵称不能为空").attr("class","alert alert-danger");
             }else{
                 $("#nameCheck").hide();
             }
@@ -244,7 +253,7 @@
         $("#psd").bind("blur",function(){
             var psd = $("#psd").val();
             if(psd.trim().length < 0 || psd.trim() == ''){
-                $("#psdCheck").css("padding","4px").html("密码不能为空").show();
+                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不能为空").attr("class","alert alert-danger");
             }else{
                 $("#psdCheck").hide();
             }
