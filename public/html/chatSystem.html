@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>WEBIMS</title>
+  <!-- jquery -->
+  <script src="../jquery/jquery-3.1.1.min.js" ></script>
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
+  <script src="../bootstrap/js/bootstrap.min.js"></script>
+
+  <style>
+    body {
+      overflow:hidden;
+      background: #f5f5f5 url("../images/bg-2.jpg") no-repeat center;
+    }
+
+    #parentBox {
+        background-color: #f5f5f5;
+        margin: 20px auto;
+        width: 900px;
+        height: 600px;
+    }
+    /* 左侧样式 */
+    .menu {
+        margin: 17px 16px ;
+    }
+
+    #comment {
+        position: relative;
+        top: 10px;
+    }
+
+    #friends {
+        position: relative;
+        top: 30px;
+    }
+
+    #friend_add {
+        position: relative;
+        top: 50px;
+    }
+
+    #setting {
+        position: relative;
+        top: 396px;
+    }
+
+    #avator {
+      margin: 8px 13px;
+    }
+
+    #menuBox {
+        background-color: #25292E;
+        width: 6.7%;
+        height: 600px;
+        float: left;
+    }
+    /* 中部样式 */
+    #middleBox {
+      background-color: #EBEBEC;
+      width: 28%;
+      height: 600px;
+      float: left;
+    }
+
+    #queryBox {
+      background-color: red;
+      height: 60px;
+    }
+
+    #listBox {
+      background-color: #EBEBEC;
+      height: 540px;
+    }
+    /* 右侧样式 */
+    #leftBox {
+        background-color: #F7F7F7;
+        width: 65.3%;
+        height: 600px;
+        float: left;
+    }
+
+    #leftTopBox {
+        background-color: blueviolet;
+        width: 100%;
+        height: 60px;
+    }
+
+    #messageBox {
+        background-color: #2e6da4;
+        width: 100%;
+        height: 400px;
+    }
+
+    #inputBox {
+        background-color: #9d9d9d;
+        width: 100%;
+        height: 140px;
+    }
+
+  </style>
+</head>
+<body>
+    <div id="parentBox" >
+      <div id="menuBox">
+        <img id="avator" src="../images/avator/1.png">
+        <div  class="menu">
+        <img id="comment" src="../images/aliIcon/comment.png" height="29px" width="29px" >
+        <img id="friends" src="../images/aliIcon/friend.png" height="29px" width="29px" >
+        <img id="friend_add" src="../images/aliIcon/friend_add.png" height="29px" width="29px" >
+        <img id="setting" src="../images/aliIcon/set.png" height="29px" width="29px" >
+        </div>
+      </div>
+      <div id="middleBox">
+        <div id="queryBox" >
+
+        </div>
+        <div id="listBox"></div>
+      </div>
+      <div id="leftBox" >
+        <div id="leftTopBox">
+
+        </div>
+        <div id="messageBox"></div>
+        <div id="inputBox"></div>
+      </div>
+    </div>
+</body>
+</html>
