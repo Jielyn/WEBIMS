@@ -218,9 +218,9 @@
 
         //注册页面
         $("#registeA").bind("click",function(){
-            $("#accountCheck").show();
-            $("#nameCheck").show();
-            $("#psdCheck").show();
+            $("#accountCheck").html("账号必须是英文").attr("class","").css("color","#695F56").show();
+            $("#nameCheck").html("昵称是必填项").attr("class","").css("color","#695F56").show();
+            $("#psdCheck").html("密码必填项").attr("class","").css("color","#695F56").show();
 
             $("div[class='form-group']:lt(4)").show();
             $("div[class='form-group']:gt(3)").hide();
