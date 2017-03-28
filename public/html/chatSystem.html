@@ -5,10 +5,13 @@
   <title>WEBIMS</title>
   <!-- jquery -->
   <script src="../jquery/jquery-3.1.1.min.js" ></script>
+  <!-- jquery-scrollBar -->
+
   <!-- bootstrap -->
   <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
   <script src="../bootstrap/js/bootstrap.min.js"></script>
-
+  <!--<script src="//cdn.ckeditor.com/4.6.2/full/ckeditor.js"></script>-->
+  <script src="../ckeditor/ckeditor.js" ></script>
   <style>
     body {
       overflow:hidden;
@@ -21,41 +24,49 @@
         width: 900px;
         height: 600px;
     }
+
     /* 左侧样式 */
+
+    #menuBox {
+      background-color: #25292E;
+      width: 6.7%;
+      height: 600px;
+      float: left;
+    }
+
+    #avator {
+      margin: 12px 13px;
+      cursor: pointer;
+    }
+
     .menu {
-        margin: 17px 16px ;
+        margin: 13px 16px ;
     }
 
     #comment {
         position: relative;
         top: 10px;
+        cursor: pointer;
     }
 
     #friends {
         position: relative;
         top: 30px;
+        cursor: pointer;
     }
 
     #friend_add {
         position: relative;
         top: 50px;
+        cursor: pointer;
     }
 
     #setting {
         position: relative;
         top: 396px;
+        cursor: pointer;
     }
 
-    #avator {
-      margin: 8px 13px;
-    }
-
-    #menuBox {
-        background-color: #25292E;
-        width: 6.7%;
-        height: 600px;
-        float: left;
-    }
     /* 中部样式 */
     #middleBox {
       background-color: #EBEBEC;
@@ -65,46 +76,171 @@
     }
 
     #queryBox {
-      background-color: red;
-      height: 60px;
-    }
-
-    #listBox {
-      background-color: #EBEBEC;
-      height: 540px;
-    }
-    /* 右侧样式 */
-    #leftBox {
-        background-color: #F7F7F7;
-        width: 65.3%;
-        height: 600px;
-        float: left;
-    }
-
-    #leftTopBox {
-        background-color: blueviolet;
-        width: 100%;
+        background-color: #EEEBE9;
         height: 60px;
     }
 
+    .glyphicon-search {
+        left: 192px;
+        top: 4px;
+        color: gray;
+    }
+
+    #queryContent {
+        position: relative;
+        top: 24px;
+        left: 25px;
+        width: 190px;
+        height: 25px;
+    }
+
+    #listBox {
+        background-color: #EBEBEC;
+        height: 540px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .listContent {
+        width: 235px;
+        height: 60px;
+        margin: 1px;
+        background-color: #ddd;
+    }
+
+    .blueBar {
+        width: 3px;
+        height: 60px;
+        background-color: #0AA8E3;
+        float: left;
+    }
+
+    .content_img {
+        position: relative;
+        left: 17px;
+        top: 12px;
+    }
+
+    .content_name {
+        font-size: 1.2rem;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
+        position: relative;
+        left: 29px ;
+        top: 13px;
+    }
+
+    .online, .offline {
+        position: relative;
+        top: 14px;
+        left: 172px;
+        width: 8px;
+        height: 8px;
+    }
+
+    /* 右侧样式 */
+    #leftBox {
+        width: 65.3%;
+        height: 600px;
+        float: left;
+        background: #F7F7F7 url("../images/aliIcon/comment.png") no-repeat 186px 186px;
+    }
+
+    #leftTopBox {
+        background-color: #F5F5F5;
+        width: 100%;
+        height: 60px;
+        display: flex;
+    }
+
+    .nickName {
+        /*background-color: red;*/
+        width: auto;
+        font-size: 18px;
+        margin: 20px 200px;
+        cursor: pointer;
+    }
+
+    .profile {
+        /*background-color: #1b6d85;*/
+        position: relative;
+        left: 540px;
+        top: 14px;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+    }
+
+
     #messageBox {
-        background-color: #2e6da4;
+        background-color: #F7F7F7;
         width: 100%;
         height: 400px;
     }
 
     #inputBox {
-        background-color: #9d9d9d;
+        background-color: #F1F1F1;
         width: 100%;
         height: 140px;
     }
 
+    .sendBtn {
+        width: 25px;
+        height: 25px;
+        position: relative;
+        left: 535px;
+        bottom: 36px;
+        cursor: pointer;
+    }
+
+/*    .cke_button__smiley_icon {
+        background: url(../images/editor/smiley.png) no-repeat !important;
+    }*/
+
   </style>
 </head>
 <body>
+    <script>
+      $(function() {
+          hideWindow();
+          switchWindow();
+      });
+
+      function switchWindow() {
+          // 切换聊天对象
+          $(".listContent").bind("click", function() {
+              showWindow();
+              $(".listContent").css("background-color","#ddd");
+              $(".listContent").children("div .blueBar").remove();
+              if(!$(this).children("div .blueBar")[0]) {
+                  var $blueBar = $("<div></div>").addClass("blueBar");
+                  $(this).append($blueBar);
+              }
+              $(this).css("background-color","#E7F1F6");
+              $(".nickName").text($(this).children("span").text());
+          });
+      }
+      
+      function initCurtain() {
+          var $curtain = $("<div>幕布</div>").addClass("leftBox");
+//          $curtain.css("zIndex","11");
+          $("#parentBox").append($curtain);
+      }
+      
+      function showWindow() {
+          $('#leftTopBox').show();
+          $('#messageBox').show();
+          $('#inputBox').show();
+      }
+      
+      function hideWindow() {
+          $('#leftTopBox').hide();
+          $('#messageBox').hide();
+          $('#inputBox').hide();
+      }
+    </script>
     <div id="parentBox" >
       <div id="menuBox">
-        <img id="avator" src="../images/avator/1.png">
+        <img id="avator" href="#" src="../images/avator/1.png">
         <div  class="menu">
         <img id="comment" src="../images/aliIcon/comment.png" height="29px" width="29px" >
         <img id="friends" src="../images/aliIcon/friend.png" height="29px" width="29px" >
@@ -113,17 +249,85 @@
         </div>
       </div>
       <div id="middleBox">
-        <div id="queryBox" >
-
+        <div id="queryBox">
+          <input id="queryContent" type="text" class="form-control" aria-describedby="sizing-addon3"
+                   placeholder="搜索">
+          <span class="glyphicon glyphicon-search"></span>
         </div>
-        <div id="listBox"></div>
+        <div id="listBox" >
+          <div class="listContent">
+          <img src="../images/avator/1.png" class="content_img" >
+          <img class="online" src="../images/aliIcon/online.png">
+          <span class="content_name" >Natalie Portman</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/2.png" class="content_img" >
+            <img class="online" src="../images/aliIcon/online.png">
+            <span class="content_name">Ethan Hawke</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/3.png" class="content_img" >
+            <img class="online" src="../images/aliIcon/online.png">
+            <span class="content_name">Kevin Spacey</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/4.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Rosamund Pike</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/5.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Natalie Portman</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/6.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Robert Redford</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/7.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Scarlett Johansson</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/8.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Tom Cruise</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/9.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Eva Green</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/9.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Paul Newman</span>
+          </div>
+        </div>
       </div>
       <div id="leftBox" >
         <div id="leftTopBox">
-
+          <img class="profile" src="../images/aliIcon/profile.png" alt="查看资料">
+          <div class="nickName"></div>
         </div>
         <div id="messageBox"></div>
-        <div id="inputBox"></div>
+        <div id="inputBox">
+            <textarea name="editor" maxlength="20" rows="2" cols="80" ></textarea><img class="sendBtn" src="../images/aliIcon/send1.png">
+            <script>
+              CKEDITOR.replace('editor');
+            </script>
+        </div>
       </div>
     </div>
 </body>
