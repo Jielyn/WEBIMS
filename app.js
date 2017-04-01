@@ -7,7 +7,7 @@ var join = require("path").join;
 var express = require("express");
 var mysql = require("mysql");
 var routes = require("./routes/routes");
-var baseMange = require("./models/baseModels");
+var baseManage = require("./models/baseModels");
 var bodyParser = require("body-parser");
 
 var app = express() ;
@@ -19,7 +19,7 @@ app.use(express.static(join(__dirname, 'public')));
 var db = mysql.createConnection({
     host:'localhost',
     user:'root',
-    password:'123456',
+    password:'1234',
     database:'webims'
 });
 
@@ -29,13 +29,11 @@ app.use(bodyParser.urlencoded({
 }));
 
 //catch 404 and forward to error handler
-app.use(function (req,res,next) {
-    var err = new Error("Not Found");
-    err.status = 404;
-    next(err);
-});
-
-
+// app.use(function (req,res,next) {
+//     var err = new Error("Not Found");
+//     err.status = 404;
+//     next(err);
+// });
 
 routes(app,db);
 
