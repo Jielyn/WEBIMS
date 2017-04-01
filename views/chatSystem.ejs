@@ -5,13 +5,19 @@
     <title>WEBIMS</title>
     <!-- jquery -->
     <script src="../jquery/jquery-3.1.1.min.js" ></script>
-    <!-- jquery-scrollBar -->
 
     <!-- bootstrap -->
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-    <!--<script src="//cdn.ckeditor.com/4.6.2/full/ckeditor.js"></script>-->
-    <script src="../ckeditor/ckeditor.js" ></script>
+
+    <!-- chatBubble-->
+    <link rel="stylesheet" href="../stylesheets/bubble.css" >
+
+    <!-- scrollbar -->
+    <link rel="stylesheet" href="../scrollbar/style/jquery.jscrollpane.css">
+    <script src="../scrollbar/script/jquery.mousewheel.js"></script>
+    <script src="../scrollbar/script/jquery.jscrollpane.min.js"></script>
+
     <style>
         body {
             overflow:hidden;
@@ -26,7 +32,6 @@
         }
 
         /* 左侧样式 */
-
         #menuBox {
             background-color: #25292E;
             width: 6.7%;
@@ -79,7 +84,7 @@
             background-color: #EEEBE9;
             height: 60px;
         }
-
+        /* 放大镜图标 */
         .glyphicon-search {
             left: 192px;
             top: 4px;
@@ -102,7 +107,7 @@
         }
 
         .listContent {
-            width: 235px;
+            width: 250px;
             height: 60px;
             margin: 1px;
             background-color: #ddd;
@@ -153,7 +158,6 @@
         }
 
         .nickName {
-            /*background-color: red;*/
             width: auto;
             font-size: 18px;
             margin: 20px 200px;
@@ -161,7 +165,6 @@
         }
 
         .profile {
-            /*background-color: #1b6d85;*/
             position: relative;
             left: 540px;
             top: 14px;
@@ -170,31 +173,84 @@
             cursor: pointer;
         }
 
-
         #messageBox {
             background-color: #F7F7F7;
             width: 100%;
             height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .rightAvator {
+            float: right;
+            /*position: relative;*/
+            /*right: 10px;*/
+            /*bottom: 2px;*/
+            margin-right: 20px;
+        }
+
+        .leftAvator {
+            float: left;
+            /*position: relative;*/
+            /*right: 10px;*/
+            /*bottom: 2px;*/
+            margin-left: 20px;
+        }
+
+        .timeMessage {
+            background-color: #DADADA;
+            width: 100px;
+            height: 18px;
+            font-size: 1px;
+            font-family: "Microsoft Sans Serif";
+            color: white;
+            border-radius: 3px;
+            position: relative;
+            left: 235px;
+            /*top: 6px;*/
+            padding: 1px;
+
+        }
+
+        #toolbar {
+            background: #F1F1F1;
+            width: 100%;
+            height: 25px;
+        }
+
+        .emoji {
+            width: 23px;
+            height: 23px;
+            position: relative;
+            top: 3px;
+            left: 26px;
+            cursor: pointer;
         }
 
         #inputBox {
             background-color: #F1F1F1;
             width: 100%;
-            height: 140px;
+            height: 115px;
+        }
+
+        #editor {
+            width: 90%;
+            height: 70px;
+            position: relative;
+            left: 25px;
+            top: 5px;
+            background:transparent;
+            border-style:none;
+            resize:none;
+            outline:none;
         }
 
         .sendBtn {
-            width: 25px;
-            height: 25px;
+            width: 56px;
+            height: 32px;
             position: relative;
-            left: 535px;
-            bottom: 36px;
-            cursor: pointer;
+            left: 519px;
         }
-
-        /*    .cke_button__smiley_icon {
-                background: url(../images/editor/smiley.png) no-repeat !important;
-            }*/
 
     </style>
 </head>
@@ -203,10 +259,124 @@
     $(function() {
         hideWindow();
         switchWindow();
+        changeEmojiColor();
+        initListSlider();
+
+        // 编辑器背景颜色改变
+        $("#editor").on({
+            focus:function() {
+                $("#editor, #inputBox, #toolbar").css("background", "white");
+            },
+            blur:function() {
+                $("#editor, #inputBox, #toolbar").css("background", "#F1F1F1");
+            },
+            keydown:function() {
+                if(13 == window.event.keyCode) {
+                    if($('#editor').val().trim().length > 0) {
+                        sendMessage();
+                    } else {
+                        $('.sendBtn').popover('show');
+                        $('.sendBtn').focus();
+                        return false;
+                    }
+
+                }
+            }
+        });
+
+        // 发送按钮事件绑定
+        $('.sendBtn').on({
+            click:function() {
+                if($('#editor').val().trim().length > 0) {
+                    sendMessage();
+                } else {
+                    $('.sendBtn').popover('show');
+                    return false;
+                }
+            }
+        });
+
+        // 接受按钮 模拟用
+        $('#receiveBtn').on('click', function() {
+            if($('#editor').val().trim().length > 0) {
+                receiveMessage();
+            }
+        });
+
     });
 
+    function sendMessage() {
+        var $editor = $('#editor');
+        var message = $editor.val();
+        var bubbleMessage = addSendMessageBubble(message);
+        $('#messageBox').append(getTimeMessage()).append(bubbleMessage);
+        $editor.val('').focus();
+        scrollToBottom();
+    }
+
+    function receiveMessage() {
+        var $editor = $('#editor');
+        var receiveMessage = $editor.val();
+        var bubbleMessage = addReceiveMessageBubble(receiveMessage);
+        $('#messageBox').append(getTimeMessage()).append(bubbleMessage);
+        $editor.val('').focus();
+        scrollToBottom();
+    }
+
+    function getTimeMessage() {
+        var $timeDiv = $("<div></div>").addClass("timeMessage").html(getFormatDate());
+        return $timeDiv;
+    }
+
+    function getFormatDate() {
+        var date = new Date();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        if(month <= 9)
+            month = "0" + month;
+        if(day <= 9)
+            day = "0" + day;
+        if(hours <= 9) {
+            hours = "0" + hours;
+        }
+        if(minutes <= 9)
+            minutes = "0" + minutes;
+        return date.getFullYear() + "-" + month + "-" + day + " "
+            + hours + ":" + minutes;
+    }
+
+    // 发送/接受消息时滚动条自动置底
+    function scrollToBottom() {
+        var $messageBox = $('#messageBox');
+        // 可见高度
+        var viewHeight = $messageBox.height();
+        // 内容总高度
+        var contentHeight = $messageBox.get(0).scrollHeight;
+        // 滚动条可滚动的最大高度 = 内容总高度 - 可见高度
+        $messageBox.scrollTop(contentHeight - viewHeight);
+    }
+
+    // 初始化好友列表滚轴
+    function initListSlider() {
+        var bars = '.jspHorizontalBar, .jspVerticalBar';
+        $('.scroll-pane').bind('jsp-initialised', function (event, isScrollable) {
+            //hide the scroll bar on first load
+            $(this).find(bars).hide();
+        }).jScrollPane().hover(
+            //hide show scrollbar
+            function () {
+                $(this).find(bars).stop().fadeTo('fast', 0.9);
+            },
+            function () {
+                $(this).find(bars).stop().fadeTo('fast', 0);
+            }
+        );
+    }
+
+    // 切换聊天对象
     function switchWindow() {
-        // 切换聊天对象
         $(".listContent").bind("click", function() {
             showWindow();
             $(".listContent").css("background-color","#ddd");
@@ -217,26 +387,65 @@
             }
             $(this).css("background-color","#E7F1F6");
             $(".nickName").text($(this).children("span").text());
+
+            $('#editor').val('').focus(); // 获取焦点
         });
     }
 
-    function initCurtain() {
-        var $curtain = $("<div>幕布</div>").addClass("leftBox");
-//          $curtain.css("zIndex","11");
-        $("#parentBox").append($curtain);
-    }
-
+    // 显示右侧聊天信息
     function showWindow() {
         $('#leftTopBox').show();
         $('#messageBox').show();
         $('#inputBox').show();
+        $('#toolbar').show();
     }
 
+    // 隐藏右侧聊天信息
     function hideWindow() {
         $('#leftTopBox').hide();
         $('#messageBox').hide();
         $('#inputBox').hide();
+        $('#toolbar').hide();
     }
+
+    // 改变笑脸颜色
+    function changeEmojiColor() {
+        $('.emoji').on({
+            mouseover: function() {
+                $(this).attr("src","../images/aliIcon/emoji5_green.png")
+            },
+            mouseout: function() {
+                $(this).attr("src","../images/aliIcon/emoji5.png")
+            }
+        });
+    }
+
+    // 发送的信息加气泡操作
+    function addSendMessageBubble(HTMLMessage) {
+        var $bubbleDiv = $("<div></div>").addClass("bubbleItem clearfix");
+        var $bubbleSpan = $("<span></span>").addClass("bubble rightBubble").html(HTMLMessage);
+        var $span1 = $("<span></span>").addClass("bottomLevel");
+        var $span2 = $("<span></span>").addClass("topLevel");
+        $bubbleSpan.append($span1).append($span2);
+        $bubbleDiv.append(addAvator("rightAvator")).append($bubbleSpan);
+        return $bubbleDiv;
+    }
+    // 接受的信息加气泡操作
+    function addReceiveMessageBubble(HTMLMessage) {
+        var $bubbleDiv = $("<div></div>").addClass("bubbleItem");
+        var $bubbleSpan = $("<span></span>").addClass("bubble leftBubble").html(HTMLMessage);
+        var $span1 = $("<span></span>").addClass("bottomLevel");
+        var $span2 = $("<span></span>").addClass("topLevel");
+        $bubbleSpan.append($span1).append($span2);
+        $bubbleDiv.append(addAvator("leftAvator")).append($bubbleSpan);
+        return $bubbleDiv;
+    }
+
+    function addAvator(locAvator) {
+        var source = $("#avator").attr("src");
+        return $("<img>").attr("src", source).addClass(locAvator);
+    }
+
 </script>
 <div id="parentBox" >
     <div id="menuBox">
@@ -254,7 +463,7 @@
                    placeholder="搜索">
             <span class="glyphicon glyphicon-search"></span>
         </div>
-        <div id="listBox" >
+        <div id="listBox" class="scroll-pane">
             <div class="listContent">
                 <img src="../images/avator/1.png" class="content_img" >
                 <img class="online" src="../images/aliIcon/online.png">
@@ -322,11 +531,16 @@
             <div class="nickName"></div>
         </div>
         <div id="messageBox"></div>
+        <div id="toolbar" >
+            <img class="emoji" src="../images/aliIcon/emoji5.png" >
+        </div>
         <div id="inputBox">
-            <textarea name="editor" maxlength="20" rows="2" cols="80" ></textarea><img class="sendBtn" src="../images/aliIcon/send1.png">
-            <script>
-                CKEDITOR.replace('editor');
-            </script>
+            <textarea id="editor" ></textarea>
+            <!--<img class="sendBtn" src="../images/aliIcon/send1.png">-->
+            <!--<button class="btn btn-success sendBtn" type="button">发送</button>-->
+            <a tabindex="0" class="btn btn-success sendBtn" role="button" data-toggle="popover" data-trigger="focus"
+               placement="right" data-content="不能发送空白消息">发送</a>
+            <button class="btn" id="receiveBtn">接受数据</button>
         </div>
     </div>
 </div>

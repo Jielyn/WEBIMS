@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>WEBIMS</title>
+  <!-- jquery -->
+  <script src="../jquery/jquery-3.1.1.min.js" ></script>
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
+  <script src="../bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- chatBubble-->
+  <link rel="stylesheet" href="../stylesheets/bubble.css" >
+
+  <!-- scrollbar -->
+  <link rel="stylesheet" href="../scrollbar/style/jquery.jscrollpane.css">
+  <script src="../scrollbar/script/jquery.mousewheel.js"></script>
+  <script src="../scrollbar/script/jquery.jscrollpane.min.js"></script>
+
+  <style>
+    body {
+      overflow:hidden;
+      background: #f5f5f5 url("../images/bg-2.jpg") no-repeat center;
+    }
+
+    #parentBox {
+        background-color: #f5f5f5;
+        margin: 20px auto;
+        width: 900px;
+        height: 600px;
+    }
+
+    /* 左侧样式 */
+    #menuBox {
+      background-color: #25292E;
+      width: 6.7%;
+      height: 600px;
+      float: left;
+    }
+
+    #avator {
+      margin: 12px 13px;
+      cursor: pointer;
+    }
+
+    .menu {
+        margin: 13px 16px ;
+    }
+
+    #comment {
+        position: relative;
+        top: 10px;
+        cursor: pointer;
+    }
+
+    #friends {
+        position: relative;
+        top: 30px;
+        cursor: pointer;
+    }
+
+    #friend_add {
+        position: relative;
+        top: 50px;
+        cursor: pointer;
+    }
+
+    #setting {
+        position: relative;
+        top: 396px;
+        cursor: pointer;
+    }
+
+    /* 中部样式 */
+    #middleBox {
+      background-color: #EBEBEC;
+      width: 28%;
+      height: 600px;
+      float: left;
+    }
+
+    #queryBox {
+        background-color: #EEEBE9;
+        height: 60px;
+    }
+     /* 放大镜图标 */
+    .glyphicon-search {
+        left: 192px;
+        top: 4px;
+        color: gray;
+    }
+
+    #queryContent {
+        position: relative;
+        top: 24px;
+        left: 25px;
+        width: 190px;
+        height: 25px;
+    }
+
+    #listBox {
+        background-color: #EBEBEC;
+        height: 540px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .listContent {
+        width: 250px;
+        height: 60px;
+        margin: 1px;
+        background-color: #ddd;
+    }
+
+    .blueBar {
+        width: 3px;
+        height: 60px;
+        background-color: #0AA8E3;
+        float: left;
+    }
+
+    .content_img {
+        position: relative;
+        left: 17px;
+        top: 12px;
+    }
+
+    .content_name {
+        font-size: 1.2rem;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
+        position: relative;
+        left: 29px ;
+        top: 13px;
+    }
+
+    .online, .offline {
+        position: relative;
+        top: 14px;
+        left: 172px;
+        width: 8px;
+        height: 8px;
+    }
+
+    /* 右侧样式 */
+    #leftBox {
+        width: 65.3%;
+        height: 600px;
+        float: left;
+        background: #F7F7F7 url("../images/aliIcon/comment.png") no-repeat 186px 186px;
+    }
+
+    #leftTopBox {
+        background-color: #F5F5F5;
+        width: 100%;
+        height: 60px;
+        display: flex;
+    }
+
+    .nickName {
+        width: auto;
+        font-size: 18px;
+        margin: 20px 200px;
+        cursor: pointer;
+    }
+
+    .profile {
+        position: relative;
+        left: 540px;
+        top: 14px;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+    }
+
+    #messageBox {
+        background-color: #F7F7F7;
+        width: 100%;
+        height: 400px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .rightAvator {
+        float: right;
+        /*position: relative;*/
+        /*right: 10px;*/
+        /*bottom: 2px;*/
+        margin-right: 20px;
+    }
+
+    .leftAvator {
+        float: left;
+        /*position: relative;*/
+        /*right: 10px;*/
+        /*bottom: 2px;*/
+        margin-left: 20px;
+    }
+
+    .timeMessage {
+        background-color: #DADADA;
+        width: 100px;
+        height: 18px;
+        font-size: 1px;
+        font-family: "Microsoft Sans Serif";
+        color: white;
+        border-radius: 3px;
+        position: relative;
+        left: 235px;
+        /*top: 6px;*/
+        padding: 1px;
+
+    }
+
+    #toolbar {
+        background: #F1F1F1;
+        width: 100%;
+        height: 25px;
+    }
+
+    .emoji {
+        width: 23px;
+        height: 23px;
+        position: relative;
+        top: 3px;
+        left: 26px;
+        cursor: pointer;
+    }
+
+    #inputBox {
+        background-color: #F1F1F1;
+        width: 100%;
+        height: 115px;
+    }
+
+    #editor {
+        width: 90%;
+        height: 70px;
+        position: relative;
+        left: 25px;
+        top: 5px;
+        background:transparent;
+        border-style:none;
+        resize:none;
+        outline:none;
+    }
+
+    .sendBtn {
+        width: 56px;
+        height: 32px;
+        position: relative;
+        left: 519px;
+    }
+
+  </style>
+</head>
+<body>
+    <script>
+      $(function() {
+          hideWindow();
+          switchWindow();
+          changeEmojiColor();
+          initListSlider();
+
+          // 编辑器背景颜色改变
+          $("#editor").on({
+              focus:function() {
+                  $("#editor, #inputBox, #toolbar").css("background", "white");
+              },
+              blur:function() {
+                  $("#editor, #inputBox, #toolbar").css("background", "#F1F1F1");
+              },
+              keydown:function() {
+                  if(13 == window.event.keyCode) {
+                      if($('#editor').val().trim().length > 0) {
+                          sendMessage();
+                      } else {
+                          $('.sendBtn').popover('show');
+                          $('.sendBtn').focus();
+                          return false;
+                      }
+
+                  }
+              }
+          });
+
+          // 发送按钮事件绑定
+          $('.sendBtn').on({
+              click:function() {
+                  if($('#editor').val().trim().length > 0) {
+                      sendMessage();
+                  } else {
+                      $('.sendBtn').popover('show');
+                      return false;
+                  }
+              }
+          });
+
+          // 接受按钮 模拟用
+          $('#receiveBtn').on('click', function() {
+              if($('#editor').val().trim().length > 0) {
+                  receiveMessage();
+              }
+          });
+
+      });
+      
+      function sendMessage() {
+          var $editor = $('#editor');
+          var message = $editor.val();
+          var bubbleMessage = addSendMessageBubble(message);
+          $('#messageBox').append(getTimeMessage()).append(bubbleMessage);
+          $editor.val('').focus();
+          scrollToBottom();
+      }
+      
+      function receiveMessage() {
+          var $editor = $('#editor');
+          var receiveMessage = $editor.val();
+          var bubbleMessage = addReceiveMessageBubble(receiveMessage);
+          $('#messageBox').append(getTimeMessage()).append(bubbleMessage);
+          $editor.val('').focus();
+          scrollToBottom();
+      }
+      
+      function getTimeMessage() {
+          var $timeDiv = $("<div></div>").addClass("timeMessage").html(getFormatDate());
+          return $timeDiv;
+      }
+      
+      function getFormatDate() {
+          var date = new Date();
+          var month = date.getMonth() + 1;
+          var day = date.getDate();
+          var hours = date.getHours();
+          var minutes = date.getMinutes();
+          if(month <= 9)
+              month = "0" + month;
+          if(day <= 9)
+              day = "0" + day;
+          if(hours <= 9) {
+              hours = "0" + hours;
+          }
+          if(minutes <= 9)
+              minutes = "0" + minutes;
+          return date.getFullYear() + "-" + month + "-" + day + " "
+              + hours + ":" + minutes;
+      }
+
+      // 发送/接受消息时滚动条自动置底
+      function scrollToBottom() {
+          var $messageBox = $('#messageBox');
+          // 可见高度
+          var viewHeight = $messageBox.height();
+          // 内容总高度
+          var contentHeight = $messageBox.get(0).scrollHeight;
+          // 滚动条可滚动的最大高度 = 内容总高度 - 可见高度
+          $messageBox.scrollTop(contentHeight - viewHeight);
+      }
+
+      // 初始化好友列表滚轴
+      function initListSlider() {
+          var bars = '.jspHorizontalBar, .jspVerticalBar';
+          $('.scroll-pane').bind('jsp-initialised', function (event, isScrollable) {
+              //hide the scroll bar on first load
+              $(this).find(bars).hide();
+          }).jScrollPane().hover(
+              //hide show scrollbar
+              function () {
+                  $(this).find(bars).stop().fadeTo('fast', 0.9);
+              },
+              function () {
+                  $(this).find(bars).stop().fadeTo('fast', 0);
+              }
+          );
+      }
+
+      // 切换聊天对象
+      function switchWindow() {
+          $(".listContent").bind("click", function() {
+              showWindow();
+              $(".listContent").css("background-color","#ddd");
+              $(".listContent").children("div .blueBar").remove();
+              if(!$(this).children("div .blueBar")[0]) {
+                  var $blueBar = $("<div></div>").addClass("blueBar");
+                  $(this).append($blueBar);
+              }
+              $(this).css("background-color","#E7F1F6");
+              $(".nickName").text($(this).children("span").text());
+
+              $('#editor').val('').focus(); // 获取焦点
+          });
+      }
+
+      // 显示右侧聊天信息
+      function showWindow() {
+          $('#leftTopBox').show();
+          $('#messageBox').show();
+          $('#inputBox').show();
+          $('#toolbar').show();
+      }
+
+      // 隐藏右侧聊天信息
+      function hideWindow() {
+          $('#leftTopBox').hide();
+          $('#messageBox').hide();
+          $('#inputBox').hide();
+          $('#toolbar').hide();
+      }
+      
+      // 改变笑脸颜色
+      function changeEmojiColor() {
+          $('.emoji').on({
+              mouseover: function() {
+                  $(this).attr("src","../images/aliIcon/emoji5_green.png")
+              },
+              mouseout: function() {
+                  $(this).attr("src","../images/aliIcon/emoji5.png")
+              }
+          });
+      }
+
+      // 发送的信息加气泡操作
+      function addSendMessageBubble(HTMLMessage) {
+          var $bubbleDiv = $("<div></div>").addClass("bubbleItem clearfix");
+          var $bubbleSpan = $("<span></span>").addClass("bubble rightBubble").html(HTMLMessage);
+          var $span1 = $("<span></span>").addClass("bottomLevel");
+          var $span2 = $("<span></span>").addClass("topLevel");
+          $bubbleSpan.append($span1).append($span2);
+          $bubbleDiv.append(addAvator("rightAvator")).append($bubbleSpan);
+          return $bubbleDiv;
+      }
+      // 接受的信息加气泡操作
+      function addReceiveMessageBubble(HTMLMessage) {
+          var $bubbleDiv = $("<div></div>").addClass("bubbleItem");
+          var $bubbleSpan = $("<span></span>").addClass("bubble leftBubble").html(HTMLMessage);
+          var $span1 = $("<span></span>").addClass("bottomLevel");
+          var $span2 = $("<span></span>").addClass("topLevel");
+          $bubbleSpan.append($span1).append($span2);
+          $bubbleDiv.append(addAvator("leftAvator")).append($bubbleSpan);
+          return $bubbleDiv;
+      }
+      
+      function addAvator(locAvator) {
+          var source = $("#avator").attr("src");
+          return $("<img>").attr("src", source).addClass(locAvator);
+      }
+
+    </script>
+    <div id="parentBox" >
+      <div id="menuBox">
+        <img id="avator" href="#" src="../images/avator/1.png">
+        <div  class="menu">
+        <img id="comment" src="../images/aliIcon/comment.png" height="29px" width="29px" >
+        <img id="friends" src="../images/aliIcon/friend.png" height="29px" width="29px" >
+        <img id="friend_add" src="../images/aliIcon/friend_add.png" height="29px" width="29px" >
+        <img id="setting" src="../images/aliIcon/set.png" height="29px" width="29px" >
+        </div>
+      </div>
+      <div id="middleBox">
+        <div id="queryBox">
+          <input id="queryContent" type="text" class="form-control" aria-describedby="sizing-addon3"
+                   placeholder="搜索">
+          <span class="glyphicon glyphicon-search"></span>
+        </div>
+        <div id="listBox" class="scroll-pane">
+          <div class="listContent">
+          <img src="../images/avator/1.png" class="content_img" >
+          <img class="online" src="../images/aliIcon/online.png">
+          <span class="content_name" >Natalie Portman</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/2.png" class="content_img" >
+            <img class="online" src="../images/aliIcon/online.png">
+            <span class="content_name">Ethan Hawke</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/3.png" class="content_img" >
+            <img class="online" src="../images/aliIcon/online.png">
+            <span class="content_name">Kevin Spacey</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/4.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Rosamund Pike</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/5.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Natalie Portman</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/6.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Robert Redford</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/7.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Scarlett Johansson</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/8.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Tom Cruise</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/9.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Eva Green</span>
+          </div>
+
+          <div class="listContent" >
+            <img src="../images/avator/9.png" class="content_img" >
+            <img class="offline" src="../images/aliIcon/offline.png">
+            <span class="content_name">Paul Newman</span>
+          </div>
+        </div>
+      </div>
+      <div id="leftBox" >
+        <div id="leftTopBox">
+          <img class="profile" src="../images/aliIcon/profile.png" alt="查看资料">
+          <div class="nickName"></div>
+        </div>
+        <div id="messageBox"></div>
+        <div id="toolbar" >
+          <img class="emoji" src="../images/aliIcon/emoji5.png" >
+        </div>
+        <div id="inputBox">
+            <textarea id="editor" ></textarea>
+            <!--<img class="sendBtn" src="../images/aliIcon/send1.png">-->
+            <!--<button class="btn btn-success sendBtn" type="button">发送</button>-->
+            <a tabindex="0" class="btn btn-success sendBtn" role="button" data-toggle="popover" data-trigger="focus"
+               placement="right" data-content="不能发送空白消息">发送</a>
+            <button class="btn" id="receiveBtn">接受数据</button>
+        </div>
+      </div>
+    </div>
+</body>
+</html>
