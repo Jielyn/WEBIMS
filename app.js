@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require("express-session");
 var mysql = require("mysql");
+var ejs = require("ejs");
 
 /*var index = require('./routes/index');
 var users = require('./routes/users');*/
@@ -28,9 +29,12 @@ db.connect();
 // view engine setup
 app.set('port', process.env.PORT || 5000);
 
+//注册html模块引擎
+app.engine('html',ejs.__express);
+
 // 定义EJS模板引擎和模板文件位置，也可以使用jade或其他模型引擎
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'html');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
