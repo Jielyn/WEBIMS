@@ -65,6 +65,10 @@
       background-color: #f6f7f8;
     }
 
+    #myModal{
+      top:185px;
+    }
+
   </style>
 </head>
 
@@ -80,106 +84,124 @@
   <div class="rightBox">
     <div id="login">
       <form>
-        <!-- 注册-->
         <div class="registe">
           <table>
             <tr >
-              <!-- <th style="height: 100px"><h1 align="center" style="color: black"></h1></th> -->
-              <div id="check" style="display: none;" class="alert alert-danger">账号或密码错误，请重试！</div>
+
             </tr>
             <tr>
               <td align="center">
-                <ul class="nav nav-pills nav-justified">
-                  <li role="presentation" ><a id="loginA" href="#" style="font-size: 15px;color:#695F56" >登录</a></li>
-                  <li role="presentation"><a id="registeA" href="#" style="font-size: 15px;color:#695F56">注册</a></li>
+                <ul id="myTab" class="nav nav-tabs">
+                  <li class="active">
+                    <a href="#loginPage" data-toggle="tab">
+                      登录
+                    </a>
+                  </li>
 
+                  <li><a href="#regPage" data-toggle="tab" id="registeA">注册</a></li>
                 </ul>
               </td>
             </tr>
-            <!--注册输入框 -->
-            <div>
-              <tr>
-                <td>
-                  <div class="form-group">
-                    <input id="account" type="text" class="form-control "  placeholder="账号（英文）" style="width: 280px">
-                  </div>
-                </td>
-
-              </tr>
-              <!-- 账号校验信息-->
-              <tr>
-                <td>
-                  <div id="accountCheck" style="color:#695F56">账号必须是英文</div>
-                </td>
-              </tr>
-              <!-- 账号校验信息-->
-              <tr>
-                <td>
-                  <div class="form-group">
-                    <input id="name" type="text" class="form-control "  placeholder="昵称" style="width: 280px">
-                  </div>
-                </td>
-              </tr>
-              <!-- 昵称校验信息-->
-              <tr>
-                <td>
-                  <div id="nameCheck" style="color:#695F56">昵称是必填项</div>
-                </td>
-              </tr>
-              <!-- 昵称校验信息 -->
-              <tr>
-                <td>
-                  <div class="form-group">
-                    <input id="psd" type="password" class="form-control "  placeholder="密码（不少于6位）" style="width: 280px">
-                  </div>
-                </td>
-              </tr>
-              <!-- 密码校验信息-->
-              <tr>
-                <td>
-
-                  <div id="psdCheck" style="color:#695F56">密码必填项</div>
-
-                </td>
-              </tr>
-
-
-              <tr>
-                <td>
-                  <div class="form-group">
-                    <button id="regBtn" type="button" class="btn btn-primary" style="width: 280px">注册</button>
-                  </div>
-                </td>
-              </tr>
-            </div>
-            <!--登录输入框-->
-
-            <tr>
-              <td>
-                <div class="form-group">
-                  <input type="text" class="form-control " id="loginAccount" placeholder="账号（英文）" style="width: 280px">
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <div class="form-group">
-                  <input type="password" class="form-control " id="password" placeholder="密码（不少于6位）" style="width: 280px">
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="form-group">
-                  <button id="loginBtn" type="button" class="btn btn-primary" style="width: 280px">登录</button>
-                </div>
-              </td>
-            </tr>
-
-
-
           </table>
+
+
+          <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="loginPage">
+              <table>
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input type="text" class="form-control " id="loginAccount" placeholder="账号（英文）" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input type="password" class="form-control " id="password" placeholder="密码（不少于6位）" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+
+
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <button id="loginBtn" type="button" class="btn btn-primary" style="width: 280px">登录</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div id="check" style="display: none;" class="alert alert-danger">账号或密码错误，请重试！</div>
+                  </td>
+                </tr>
+              </table>
+
+            </div>
+
+            <div class="tab-pane fade" id="regPage">
+              <table>
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input id="account" type="text" class="form-control "  placeholder="账号（英文）" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div id="accountCheck" style="color:#695F56">账号必须是英文</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input id="name" type="text" class="form-control "  placeholder="昵称" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div id="nameCheck" style="color:#695F56">昵称是必填项</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input id="psd" type="password" class="form-control "  placeholder="密码（不少于6位）" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div id="psdCheck" style="color:#695F56">密码必填项</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <input id="psdConfirm" type="password" class="form-control "  placeholder="确认密码（不少于6位）" style="width: 280px">
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="form-group">
+                      <button id="regBtn" type="button" class="btn btn-primary" style="width: 280px">注册</button>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+          </div>
+
 
         </div>
 
@@ -191,32 +213,35 @@
 
 </div>
 
+<!-- 摸态框-->
+<div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">提示</h4>
+      </div>
+      <div class="modal-body">
+        <p id="modalMsg"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="modalBtn">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </body>
 <script type="text/javascript">
 
     $(function(){
-        //初始化页面效果
-        $("div[class='form-group']:gt(3)").hide();
-
         $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
         $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
         $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
 
-        //登录页面
-        $("#loginA").bind("click",function(){
-            console.log("隐藏");
-            //隐藏所有校验信息提示
-            //$("div[class='alert alert-danger']").hide();
-            $("#check").hide();
-            $("#accountCheck").hide();
-            $("#nameCheck").hide();
-            $("#psdCheck").hide();
-
-            $("div[class='form-group']:lt(4)").hide();
-            $("div[class='form-group']:gt(3)").show();
-            //$("div[class='form-group']:lt(4)").show();
-            //$(".login").show();
-        });
 
         //注册页面
         $("#registeA").bind("click",function(){
@@ -224,28 +249,18 @@
             $("#nameCheck").html("昵称是必填项").attr("class","").css("color","#695F56").show();
             $("#psdCheck").html("密码必填项").attr("class","").css("color","#695F56").show();
 
-            $("div[class='form-group']:lt(4)").show();
-            $("div[class='form-group']:gt(3)").hide();
-            $("#check").hide();
-            //$("div[class='form-group']:lt(4)").show();
-
-        });
-
-        //登录校验
-        $("#loginBtn").bind("click",function(){
-            var username = $("#username").val();
-            console.info(username);
-            var password = $("#password").val();
-            console.info(password);
-
-
         });
 
         //注册校验
         $("#account").bind("blur",function(){
             var account = $("#account").val();
+            var reg = /^[a-z,A-Z]+$/;
             if(account.trim().length < 0 || account.trim() == '') {
                 $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("账号不能为空").attr("class","alert alert-danger");
+            }else if(!reg.test(account)){
+                $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("必须是英文").attr("class","alert alert-danger");
+            }else if(account.trim().length > 12 || account.trim().length < 6){
+                $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("账号长度6到12位").attr("class","alert alert-danger");
             }else{
                 $("#accountCheck").hide();
             }
@@ -256,15 +271,21 @@
             var name = $("#name").val();
             if(name.trim().length < 0 || name.trim() == ''){
                 $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("昵称不能为空").attr("class","alert alert-danger");
+            }else if(name.trim().length > 12 || name.trim().length < 6){
+                $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("昵称长度6到12位").attr("class","alert alert-danger");
             }else{
                 $("#nameCheck").hide();
             }
+
         });//昵称校验
 
         $("#psd").bind("blur",function(){
             var psd = $("#psd").val();
+            var reg = /^[0-9A-Za-z]{6,12}$/;
             if(psd.trim().length < 0 || psd.trim() == ''){
                 $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不能为空").attr("class","alert alert-danger");
+            }else if(!reg.test(psd)){
+                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("又6到12字母或数字组成").attr("class","alert alert-danger");
             }else{
                 $("#psdCheck").hide();
             }
@@ -311,8 +332,15 @@
             var account = $("#account").val();
             var username = $("#name").val();
             var password = $("#psd").val();
+            var psdConfirm = $("#psdConfirm").val();
+            console.log("注册参数：" + account + ":" + username + ":" +　password + ":" + psdConfirm);
 
-            console.log("注册参数：" + account + ":" + username + ":" +　password);
+
+            if(password != psdConfirm){
+                $("#modalMsg").text("密码不一致").css("textAlign","center");
+                $("#myModal").modal();
+                return;
+            }
 
             $.ajax({
                 url:'/reg',
@@ -324,7 +352,21 @@
                 dataType:'json',
                 type:'post',
                 success:function (data) {
-                    alert("注册成功" + data.regResult);
+                    //alert("注册成功" + data.regResult);
+                    if(data.regResult){
+                        //alert("注册成功");
+                        $("#modalMsg").text("注册成功").css("textAlign","center");
+                        $("#myModal").modal();
+                        $("#modalBtn").on("click",function () {
+                              //alert("锁定登录按钮");
+                              $("#myTab li:first a").tab('show');
+                        });
+                    }else{
+                        //alert("注册失败");
+                        $("#modalMsg").text("注册失败").css("textAlign","center");
+                        $("#myModal").modal();
+                        $("#modalBtn").unbind('click');
+                    }
                 },
                 error:function (data) {
                     alert("请求失败" + data);
@@ -332,7 +374,6 @@
 
             });
         })
-
 
     });
 </script>
