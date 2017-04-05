@@ -17,15 +17,43 @@ module.exports = function(app,db) {
 
     app.get('/', function (req, res) {
         //res.send();
-        req.session.account = 'admin';
+        //req.session.account = 'admin';
         res.render('index', { title: 'Express' ,account:req.session.account});
 
     });
-    //登录成功，跳转到聊天页面
-    app.get('/chatSystem',function (req,res) {
-        res.render('chatSystem', { title: 'chatSystem' });
+
+    /*app.use('/login',function (req,res,next) {
+        var data = req.body;
+
+        next();
+    });*/
+    app.post('/login', function (req, res) {
+        var data = req.body;
+        //req.session.user = user;
+        var user = {
+            account : "account",
+            password :"password"
+        };
+        dbManger.login(db,res,data,function (callData) {
+                if(callData.count){
+                     req.session.user = user;
+                     console.log(res.session);
+                }
+
+        });
     });
 
+    //登录成功，跳转到聊天页面
+    app.get('/chatSystem',authentication,function (req,res) {
+        //authentication(req,res);
+/*        var user = {
+            account : "account",
+            password :"password"
+        };
+        req.session.user = user;
+        res.locals.session = req.session;*/
+        res.render('chatSystem', { title: 'chatSystem' });
+    });
 
     app.post('/reg', function (req, res) {
         var data = req.body;
@@ -45,9 +73,12 @@ module.exports = function(app,db) {
 
     });
 
-    app.post('/login', function (req, res) {
-        //console.log("根据param方法取参：" + req.param("username")　+ req.param("password"));
-        var data = req.body;
-        dbManger.login(db,res,data);
-    });
+
+    function authentication(req,res,next){
+        if(!req.session.user){
+            return res.redirect("/");
+        }
+        next();
+    };
+
 };

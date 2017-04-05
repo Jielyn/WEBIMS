@@ -3,7 +3,7 @@
 * */
 var mysql = require('mysql');
 
-exports.login = function (db,res,data) {
+exports.login = function (db,res,data,callback) {
     var loginSql = "SELECT COUNT(1) FROM USER WHERE " +
                    " ACCOUNT = ? && PASSWORD = ?";
 
@@ -16,23 +16,17 @@ exports.login = function (db,res,data) {
         loginArr,
         function (err,rows,fields) {
             if(err) throw err;
-           /* if(err){
-                console.log(err);
-                res.status(404);
-                res.send("查询失败");
-            }*/
             console.log("查询结果：" + rows[0]["COUNT(1)"]);
             var dbResult = rows[0]["COUNT(1)"];
             var result = new Object();
 
             if(dbResult == 0){
                 result.count = false;
-            }else{
+            }else{ //登录成功
                 result.count = true;
             }
-
+            callback(result);
             res.send(result);
-            //res.end("success");
         }
     );
 

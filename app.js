@@ -54,11 +54,24 @@ app.use(session({
     resave:false,
        saveUninitialized:true
 }));
+
+app.use(function (req,res,next) {
+    res.locals.user = req.session.user;
+    next();
+});
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));
 
 /*app.use('/', index);
 app.use('/users', users);*/
+
+/*app.use(function(req,res,next){
+    var url = req.originalUrl;
+    if(url != '/login' && !req.session.user){
+        return res.redirect("/login");
+    }
+    next();
+});*/
 
 routes(app,db);
 
