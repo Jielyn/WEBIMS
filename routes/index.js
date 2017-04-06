@@ -37,7 +37,7 @@ module.exports = function(app,db) {
         dbManger.login(db,res,data,function (callData) {
                 if(callData.count){
                      req.session.user = user;
-                     console.log(res.session);
+                     console.log(req.session);
                 }
 
         });
@@ -45,13 +45,7 @@ module.exports = function(app,db) {
 
     //登录成功，跳转到聊天页面
     app.get('/chatSystem',authentication,function (req,res) {
-        authentication(req,res);
-/*        var user = {
-            account : "account",
-            password :"password"
-        };
-        req.session.user = user;
-        res.locals.session = req.session;*/
+        //authentication(req,res);
         res.render('chatSystem', { title: 'chatSystem' });
     });
 
@@ -72,7 +66,6 @@ module.exports = function(app,db) {
         });
 
     });
-
 
     function authentication(req,res,next){
         if(!req.session.user){
