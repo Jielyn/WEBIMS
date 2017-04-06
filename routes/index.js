@@ -1,6 +1,6 @@
 var dbManger = require("../models/dbManger");
 module.exports = function(app,db) {
-    app.get('/', function (req, res) {
+    app.get('/',checkUser, function (req, res) {
         //res.send();
         //req.session.account = 'admin';
         res.render('index', { title: 'Express' ,account:req.session.account});
@@ -53,5 +53,12 @@ module.exports = function(app,db) {
         }
         next();
     };
+
+    function checkUser(req,res,next) {
+        if(req.session.user){
+           return res.redirect('/chatSystem');
+        }
+        next();
+    }
 
 };
