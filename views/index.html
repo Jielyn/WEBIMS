@@ -249,12 +249,10 @@
                 dataType:'json',
                 type:'post',
                 success:function(data){
-                    //alert("请求成功" + data.count);
-                    if(data.count == true){
-                        //alert("登录成功");
+                    //alert("请求成功" + data.flag);
+                    if(data.flag){
                         window.location.href = "/chatSystem";
                     }else{
-                        //alert("登录失败");
                         $("#check").css({padding:"4px",fontSize:"12px",color:'red'}).show();
                     }
                 },
@@ -276,13 +274,10 @@
             var psdConfirm = $("#psdConfirm").val();
             console.log("注册参数：" + account + ":" + username + ":" +　password + ":" + psdConfirm);
 
-
             if(password != psdConfirm){
-                $("#modalMsg").text("密码不一致").css("textAlign","center");
-                $("#myModal").modal();
+                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不一致").attr("class","alert alert-danger");
                 return;
             }
-
             $.ajax({
                 url:'/reg',
                 data:{
@@ -293,17 +288,13 @@
                 dataType:'json',
                 type:'post',
                 success:function (data) {
-                    //alert("注册成功" + data.regResult);
                     if(data.regResult){
-                        //alert("注册成功");
                         $("#modalMsg").text("注册成功").css("textAlign","center");
                         $("#myModal").modal();
                         $("#modalBtn").on("click",function () {
-                              //alert("锁定登录按钮");
                               $("#myTab li:first a").tab('show');
                         });
                     }else{
-                        //alert("注册失败");
                         $("#modalMsg").text("注册失败").css("textAlign","center");
                         $("#myModal").modal();
                         $("#modalBtn").unbind('click');
@@ -314,6 +305,14 @@
                 }
 
             });
+        });
+
+
+        //点击回车键 登录
+        $('body').keydown(function () {
+            if(event.keyCode == '13'){
+                $('#loginBtn').click();
+            }
         });
 
     });
