@@ -16,7 +16,7 @@ exports.login = function (res,data,callback) {
             loginArr,
             function (err,rows) {
                 if(err) throw err;
-                console.log("查询结果：" + rows[0]["username"]);
+                console.log("查询结果：" + rows[0]["account"]);
                 var result = new Object();
                 if(rows.length == 0){
                     result.flag = false;
