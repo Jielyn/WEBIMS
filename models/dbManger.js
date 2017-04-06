@@ -29,10 +29,6 @@ exports.login = function (db,res,data,callback) {
             res.send(result);
         }
     );
-
-
-    //关闭连接
-    //db.end();
 };
 
 exports.reg = function (db,res,data,callback) {

@@ -8,9 +8,6 @@ var session = require("express-session");
 var mysql = require("mysql");
 var ejs = require("ejs");
 
-/*var index = require('./routes/index');
-var users = require('./routes/users');*/
-
 // 加载路由控制
 var routes = require('./routes/index');
 
@@ -36,8 +33,6 @@ app.engine('html',ejs.__express);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // 定义日志和输出级别
 app.use(logger('dev'));
@@ -61,17 +56,6 @@ app.use(function (req,res,next) {
 });
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));
-
-/*app.use('/', index);
-app.use('/users', users);*/
-
-/*app.use(function(req,res,next){
-    var url = req.originalUrl;
-    if(url != '/login' && !req.session.user){
-        return res.redirect("/login");
-    }
-    next();
-});*/
 
 routes(app,db);
 
