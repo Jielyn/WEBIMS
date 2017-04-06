@@ -8,24 +8,9 @@ var session = require("express-session");
 var mysql = require("mysql");
 var ejs = require("ejs");
 
-/*var index = require('./routes/index');
-var users = require('./routes/users');*/
-
-// 加载路由控制
-var routes = require('./routes/index');
-
 // 创建项目实例
 var app = express();
 
-//创建数据库连接
-var db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'webims'
-});
-
-db.connect();
 // view engine setup
 app.set('port', process.env.PORT || 5000);
 
@@ -49,7 +34,7 @@ app.use(cookieParser());
 
 app.use(session({
     secret:'123456',
-    name:'testapp',
+    name:'WEBIMS',
     cookie:{maxAge:80000},
     resave:false,
        saveUninitialized:true
@@ -62,18 +47,14 @@ app.use(function (req,res,next) {
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*app.use('/', index);
-app.use('/users', users);*/
+// 加载路由控制
+var indexRouter = require('./routes/index');
+var loginRouter = require('./routes/login');
+var regRouter = require('./routes/register');
 
-/*app.use(function(req,res,next){
-    var url = req.originalUrl;
-    if(url != '/login' && !req.session.user){
-        return res.redirect("/login");
-    }
-    next();
-});*/
-
-routes(app,db);
+app.use('/', indexRouter);
+app.use('/login', loginRouter);
+app.use('/reg', regRouter);
 
 app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));

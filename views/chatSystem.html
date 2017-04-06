@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>WEBIMS</title>
+    <!-- basicStyle -->
+    <link href="../stylesheets/style.css" rel="stylesheet">
     <!-- jquery -->
     <script src="../jquery/jquery-3.1.1.min.js" ></script>
-
     <!-- bootstrap -->
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" >
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-
     <!-- chatBubble-->
     <link rel="stylesheet" href="../stylesheets/bubble.css" >
-
     <!-- scrollbar -->
     <link rel="stylesheet" href="../scrollbar/style/jquery.jscrollpane.css">
     <script src="../scrollbar/script/jquery.mousewheel.js"></script>
     <script src="../scrollbar/script/jquery.jscrollpane.min.js"></script>
-
-    <link href="stylesheets/style.css" rel="stylesheet">
-
-
 </head>
 <body>
 <script>
     $(function() {
         var account = "<%= user.account %>";
-        alert(account);
 
         hideWindow();
         switchWindow();

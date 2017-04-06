@@ -1,19 +1,5 @@
-/*var express = require('express');
-var router = express.Router();*/
-
-/* GET home page. */
-/*router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;*/
-var dbManger = require("../models/dbManger");
+/*var dbManger = require("../models/dbManger");
 module.exports = function(app,db) {
-   /* app.all("*",function (req,res,next) {
-        //设置响应头属性值 next();
-        res.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
-
-    });*/
 
     app.get('/', function (req, res) {
         //res.send();
@@ -22,14 +8,8 @@ module.exports = function(app,db) {
 
     });
 
-    /*app.use('/login',function (req,res,next) {
-        var data = req.body;
-
-        next();
-    });*/
     app.post('/login', function (req, res) {
         var data = req.body;
-        //req.session.user = user;
         var user = {
             account : "account",
             password :"password"
@@ -74,4 +54,19 @@ module.exports = function(app,db) {
         next();
     };
 
-};
+};*/
+
+var express = require('express');
+var router = express.Router();
+var checkLogin = require('../middlewares/checkAuth').authentication;
+
+router.get('/', function (req, res) {
+    res.render('index', { title: 'Express' ,account:req.session.account});
+});
+
+// GET /chatSystem 登录成功,跳转到聊天页面
+router.get('/chatSystem', checkLogin, function (req,res) {
+    res.render('chatSystem', { title: 'chatSystem' });
+});
+
+module.exports = router;
