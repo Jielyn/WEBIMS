@@ -45,7 +45,7 @@ module.exports = function(app,db) {
 
     //登录成功，跳转到聊天页面
     app.get('/chatSystem',authentication,function (req,res) {
-        //authentication(req,res);
+        authentication(req,res);
 /*        var user = {
             account : "account",
             password :"password"
