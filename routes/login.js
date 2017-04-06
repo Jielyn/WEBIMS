@@ -10,11 +10,14 @@ router.post('/', function (req, res) {
         password :"password"
     };
     loginModel.login(res,data,function (callData) {
-        if(callData.count){
+        if(callData.flag){
             req.session.user = user;
         }
     });
 });
+
+
+
 
 module.exports = router;
 

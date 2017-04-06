@@ -10,7 +10,7 @@ exports.reg = function (res,data,callback) {
         var queryAccount = "SELECT COUNT(1) FROM USER WHERE ACCOUNT = ?";
         var queryArr = [data.account] ;
         connection.query(queryAccount,queryArr,function (err,rows) {
-            //if(err) throw err;
+            if(err) throw err;
             var dbResult = rows[0]["COUNT(1)"];
             console.log(dbResult + ":账号查询结果" );
             callback(dbResult);
@@ -28,7 +28,7 @@ exports.doReg = function (res,data) {
         connection.query(regSql,paramsArr,function (err) {
             var result = new Object();
             result.regResult = false;
-            //if(err) throw err;
+            if(err) throw err;
             result.regResult = true;
             res.send(result);
             connection.release();

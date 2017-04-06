@@ -275,7 +275,8 @@
             console.log("注册参数：" + account + ":" + username + ":" +　password + ":" + psdConfirm);
 
             if(password != psdConfirm){
-                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不一致").attr("class","alert alert-danger");
+                alert("不一致  ");
+                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不一致").attr("class","alert alert-danger").show();
                 return;
             }
             $.ajax({

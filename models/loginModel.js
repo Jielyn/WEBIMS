@@ -8,23 +8,22 @@ var pool = mysql.createPool(dbconfig.mysql);
 exports.login = function (res,data,callback) {
 
     pool.getConnection(function(err, connection) {
-        var loginSql = "SELECT COUNT(1) FROM USER WHERE " +
+        var loginSql = "SELECT account,username,avator FROM USER WHERE " +
             " ACCOUNT = ? && PASSWORD = ?";
         var loginArr = [data.account,data.password];
         connection.query(
             loginSql,
             loginArr,
-            function (err,rows,fields) {
+            function (err,rows) {
                 if(err) throw err;
-                console.log("查询结果：" + rows[0]["COUNT(1)"]);
-                var dbResult = rows[0]["COUNT(1)"];
+                console.log("查询结果：" + rows[0]["username"]);
                 var result = new Object();
-                if(dbResult == 0){
-                    result.count = false;
+                if(rows.length == 0){
+                    result.flag = false;
                 }else{ //登录成功
-                    result.count = true;
+                    result.flag = true;
                 }
-                callback(result);
+                callback(result,rows);
                 res.send(result);
                 connection.release();
             }

@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var checkLogin = require('../middlewares/checkAuth').authentication;
+var checkNotLogin = require("../middlewares/checkAuth").checkUser;
 
-router.get('/', function (req, res) {
+router.get('/',checkNotLogin,function (req, res) {
     res.render('index', { title: 'Express' ,account:req.session.account});
 });
 
