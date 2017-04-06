@@ -8,21 +8,9 @@ var session = require("express-session");
 var mysql = require("mysql");
 var ejs = require("ejs");
 
-// 加载路由控制
-var routes = require('./routes/index');
-
 // 创建项目实例
 var app = express();
 
-//创建数据库连接
-var db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'webims'
-});
-
-db.connect();
 // view engine setup
 app.set('port', process.env.PORT || 5000);
 
@@ -33,6 +21,8 @@ app.engine('html',ejs.__express);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // 定义日志和输出级别
 app.use(logger('dev'));
@@ -44,7 +34,7 @@ app.use(cookieParser());
 
 app.use(session({
     secret:'123456',
-    name:'testapp',
+    name:'WEBIMS',
     cookie:{maxAge:80000},
     resave:false,
        saveUninitialized:true
@@ -57,7 +47,14 @@ app.use(function (req,res,next) {
 // 定义静态文件目录
 app.use(express.static(path.join(__dirname, 'public')));
 
-routes(app,db);
+// 加载路由控制
+var indexRouter = require('./routes/index');
+var loginRouter = require('./routes/login');
+var regRouter = require('./routes/register');
+
+app.use('/', indexRouter);
+app.use('/login', loginRouter);
+app.use('/reg', regRouter);
 
 app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));

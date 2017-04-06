@@ -7,7 +7,6 @@ exports.login = function (db,res,data,callback) {
     var loginSql = "SELECT account,username,avator FROM USER WHERE " +
                    " ACCOUNT = ? && PASSWORD = ?";
 
-    console.log(data);
     var loginArr = [data.account,data.password];
 
     //查询
