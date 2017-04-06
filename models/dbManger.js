@@ -4,7 +4,7 @@
 var mysql = require('mysql');
 
 exports.login = function (db,res,data,callback) {
-    var loginSql = "SELECT COUNT(1) FROM USER WHERE " +
+    var loginSql = "SELECT account,username,avator FROM USER WHERE " +
                    " ACCOUNT = ? && PASSWORD = ?";
 
     console.log(data);
@@ -16,16 +16,14 @@ exports.login = function (db,res,data,callback) {
         loginArr,
         function (err,rows,fields) {
             if(err) throw err;
-            console.log("查询结果：" + rows[0]["COUNT(1)"]);
-            var dbResult = rows[0]["COUNT(1)"];
+            console.log("查询结果：" + rows[0]["username"]);
             var result = new Object();
-
-            if(dbResult == 0){
-                result.count = false;
+            if(rows.length == 0){
+                result.flag = false;
             }else{ //登录成功
-                result.count = true;
+                result.flag = true;
             }
-            callback(result);
+            callback(result,rows);
             res.send(result);
         }
     );

@@ -1,20 +1,5 @@
-/*var express = require('express');
-var router = express.Router();*/
-
-/* GET home page. */
-/*router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;*/
 var dbManger = require("../models/dbManger");
 module.exports = function(app,db) {
-   /* app.all("*",function (req,res,next) {
-        //设置响应头属性值 next();
-        res.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
-
-    });*/
-
     app.get('/', function (req, res) {
         //res.send();
         //req.session.account = 'admin';
@@ -22,20 +7,15 @@ module.exports = function(app,db) {
 
     });
 
-    /*app.use('/login',function (req,res,next) {
-        var data = req.body;
-
-        next();
-    });*/
     app.post('/login', function (req, res) {
         var data = req.body;
         //req.session.user = user;
-        var user = {
-            account : "account",
-            password :"password"
-        };
-        dbManger.login(db,res,data,function (callData) {
-                if(callData.count){
+        var user = {};
+        dbManger.login(db,res,data,function (callData,rows) {
+                if(callData.flag){
+                    user.account = rows[0]["account"];
+                    user.username = rows[0]["username"];
+                    user.avator = rows[0]["avator"];
                      req.session.user = user;
                      console.log(req.session);
                 }
