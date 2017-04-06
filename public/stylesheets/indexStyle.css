@@ -1,0 +1,43 @@
+a:link{
+    text-decoration:none;
+    color:#000
+}
+
+a:visited{
+    color:black;
+}
+
+a:hover{
+    text-decoration:underline;
+    color:#f90;
+}
+
+a:active{
+    color:blue;
+}
+
+.main{
+    width: 100%;
+    height: 633px;
+    background: url(/images/bg-2.jpg) no-repeat center;
+}
+
+.rightBox{
+    position: fixed;
+    width: 300px;
+    height: 550px;
+    left: 800px;
+    top: 35px;
+    background-color: #f6f7f8;
+    border-radius: 10px;
+}
+
+#login{
+    padding: 10px;
+    margin-top: 95px;
+    background-color: #f6f7f8;
+}
+
+#myModal{
+    top:185px;
+}

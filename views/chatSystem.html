@@ -20,10 +20,25 @@
 <body>
 <script>
     $(function() {
-        hideWindow();
-        switchWindow();
-        changeEmojiColor();
-        initListSlider();
+        hideWindow();       // 进入聊天主页面时先隐藏右侧信息
+        switchWindow();     // 切换聊天对象
+        initListSlider();   // 好友列表滚动条样式初始化
+        changeEmojiColor(); // 鼠标移入时改变图片状态
+
+        var account = "<%= user.account %>";
+        // 加载好友列表
+        $.ajax({
+            url: "/loadFriendList",
+            data: {
+                account: account
+            },
+            dataType: 'json',
+            type: 'post',
+            success: function(friendList) {
+                console.log(friendList);
+                loadFriends(friendList);
+            }
+         });
 
         // 编辑器背景颜色改变
         $("#editor").on({
@@ -38,11 +53,9 @@
                     if($('#editor').val().trim().length > 0) {
                         sendMessage();
                     } else {
-                        $('.sendBtn').popover('show');
-                        $('.sendBtn').focus();
+                        $('.sendBtn').popover('show').focus();
                         return false;
                     }
-
                 }
             }
         });
@@ -59,7 +72,7 @@
             }
         });
 
-        // 接受按钮 模拟用
+        // 接受按钮 模拟用，后期移除
         $('#receiveBtn').on('click', function() {
             if($('#editor').val().trim().length > 0) {
                 receiveMessage();
@@ -97,17 +110,11 @@
         var day = date.getDate();
         var hours = date.getHours();
         var minutes = date.getMinutes();
-        if(month <= 9)
-            month = "0" + month;
-        if(day <= 9)
-            day = "0" + day;
-        if(hours <= 9) {
-            hours = "0" + hours;
-        }
-        if(minutes <= 9)
-            minutes = "0" + minutes;
-        return date.getFullYear() + "-" + month + "-" + day + " "
-            + hours + ":" + minutes;
+        return date.getFullYear()
+            + "-" + (month < 10 ? "0" + month : month)
+            + "-" + (day < 10 ? "0" + day : day) + " "
+            + (hours < 10 ? "0" + hours : hours)
+            + ":" + (minutes < 10 ? "0" + minutes : minutes);
     }
 
     // 发送/接受消息时滚动条自动置底
@@ -142,15 +149,14 @@
     function switchWindow() {
         $(".listContent").bind("click", function() {
             showWindow();
-            $(".listContent").css("background-color","#ddd");
+            $(".listContent").css("background-color", "#ddd");
             $(".listContent").children("div .blueBar").remove();
             if(!$(this).children("div .blueBar")[0]) {
                 var $blueBar = $("<div></div>").addClass("blueBar");
                 $(this).append($blueBar);
             }
-            $(this).css("background-color","#E7F1F6");
+            $(this).css("background-color", "#E7F1F6");
             $(".nickName").text($(this).children("span").text());
-
             $('#editor').val('').focus(); // 获取焦点
         });
     }
@@ -193,6 +199,7 @@
         $bubbleDiv.append(addAvator("rightAvator")).append($bubbleSpan);
         return $bubbleDiv;
     }
+
     // 接受的信息加气泡操作
     function addReceiveMessageBubble(HTMLMessage) {
         var $bubbleDiv = $("<div></div>").addClass("bubbleItem");
@@ -207,6 +214,23 @@
     function addAvator(locAvator) {
         var source = $("#avator").attr("src");
         return $("<img>").attr("src", source).addClass(locAvator);
+    }
+
+    // 显示好友列表
+    function loadFriends(friendList) {
+/*        <div class="listContent" >
+                <img src="../images/avator/2.png" class="content_img" >
+                <img class="online" src="../images/aliIcon/online.png">
+                <span class="content_name">Ethan Hawke</span>
+        </div>*/
+        friendList.forEach(function(friend) {
+
+        });
+    }
+
+    // 创建好友单个好友
+    function createFriend() {
+
     }
 
 </script>
