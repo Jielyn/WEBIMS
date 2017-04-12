@@ -16,16 +16,91 @@
     <link rel="stylesheet" href="../scrollbar/style/jquery.jscrollpane.css">
     <script src="../scrollbar/script/jquery.mousewheel.js"></script>
     <script src="../scrollbar/script/jquery.jscrollpane.min.js"></script>
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js" ></script>
 </head>
 <body>
 <script>
+    var messageInfo = {};   // 用于存储聊天记录
+    var unReadMessage = {}; // 用于存储未读消息
+//    var unReadGroupMessage = {}; // 用于存储群聊未读消息
     $(function() {
+        // 清楚隐藏域中的缓存
+        $('input[type=hidden]').val('');
         var account = "<%= user.account %>";
+        var socket = io();
 
-        hideWindow();
-        switchWindow();
-        changeEmojiColor();
-        initListSlider();
+        // 发送当前用户的登录信息存储于后台
+        socket.emit('loginInfo', account);
+
+        // 接受私聊消息
+        socket.on('sendTo', function(data) {
+            // 如果发送信息的账户不是当前窗口的聊天账户则出现小红点并将信息存储于全局变量
+            var sendUserAccount = data.sendUserAccount;
+            if(sendUserAccount == $("#leftTopBox input").val()) {
+                receiveMessage(data.msg, sendUserAccount);
+                saveChatWindow();
+            } else {
+                if(unReadMessage[sendUserAccount]) {
+                    unReadMessage[sendUserAccount].push(data.msg);
+                    chageRedPoint(sendUserAccount);
+                } else {
+                    unReadMessage[sendUserAccount] = [data.msg];
+                    showRedPoint(sendUserAccount);
+                }
+            }
+        });
+
+        // 接受群聊消息
+        socket.on('groupChat', function(data) {
+            // 如果发送信息的账户不是当前窗口的聊天账户则出现小红点并将信息存储于全局变量
+            var sendUserAccount = data.sendUserAccount;
+            var groupRoom = data.groupRoom;
+            if(groupRoom == $("#leftTopBox input").val()) {
+                receiveMessage(data.msg, sendUserAccount);
+                saveChatWindow();
+            } else {
+                if(unReadMessage[groupRoom]) {
+                    unReadMessage[groupRoom].push(data);
+                    chageRedPoint(groupRoom);
+                } else {
+                    unReadMessage[groupRoom] = [data];
+                    showRedPoint(groupRoom);
+                }
+            }
+        });
+
+        // 提示红点
+        function showRedPoint(sendUserAccount) {
+            $(".listContent input[value="+sendUserAccount+"]")
+                .prevAll("span:last")
+                .addClass("redPoint")
+                .text(unReadMessage[sendUserAccount].length);
+        }
+
+        // 改变红框中的数字
+        function chageRedPoint(sendUserAccount) {
+            $(".listContent input[value="+sendUserAccount+"]")
+                .prevAll("span:last")
+                .text(unReadMessage[sendUserAccount].length);
+        }
+
+        // 加载好友列表信息
+        $.ajax({
+            url: "/loadFriendList",
+            data: {
+                account: account
+            },
+            type: 'POST',
+            dataType: 'JSON',
+            success: function(friends) {
+                createFrinedList(friends);
+                initListSlider();
+                hideWindow();
+                switchWindow();
+                changeEmojiColor();
+            }
+        });
 
         // 编辑器背景颜色改变
         $("#editor").on({
@@ -36,9 +111,18 @@
                 $("#editor, #inputBox, #toolbar").css("background", "#F1F1F1");
             },
             keydown:function() {
-                if(13 == window.event.keyCode) {
+                if(13 == event.keyCode) {
                     if($('#editor').val().trim().length > 0) {
-                        sendMessage();
+                        //socket.emit('groupChat', {msg: 22222});
+                        $.ajax({
+                            url: '/groupChat',
+                            type: 'POST',
+                            success: function() {
+                                sendMessage();
+                                TopFriend();
+                                saveChatWindow();
+                            }
+                        });
                     } else {
                         $('.sendBtn').popover('show');
                         $('.sendBtn').focus();
@@ -53,7 +137,24 @@
         $('.sendBtn').on({
             click:function() {
                 if($('#editor').val().trim().length > 0) {
-                    sendMessage();
+                    // 获取接受信息的对象（对象只可能是单个账户或者群聊）
+                    var account = $("#leftTopBox input").val();
+                    if(account.split('_')[0] === 'groupChat') {
+                        // 群聊
+                        socket.emit("groupChat", {groupRoom: account, msg: $("#editor").val()});
+                    } else {
+                        // 私聊
+                        socket.emit("sendTo", {account: account, msg: $("#editor").val()});
+                    }
+                    $.ajax({
+                        url: '/groupChat',
+                        type: 'POST',
+                        success: function() {
+                            sendMessage();
+                            TopFriend();
+                            saveChatWindow();
+                        }
+                    });
                 } else {
                     $('.sendBtn').popover('show');
                     return false;
@@ -61,15 +162,50 @@
             }
         });
 
-        // 接受按钮 模拟用
-        $('#receiveBtn').on('click', function() {
-            if($('#editor').val().trim().length > 0) {
-                receiveMessage();
-            }
-        });
-
     });
 
+    // 判断当前点击用户是否有未读消息
+    function hasUnreadMessage($obj) {
+        var res = false;
+        var $a = $obj.find("span[class=redPoint]");
+        if($a.length) res = true;
+        return res;
+    }
+
+    // 将变量中的临时存储信息放入到当前window中
+    function showUnreadMessage(sendUserAccount) {
+        unReadMessage[sendUserAccount].forEach(function(message) {
+            receiveMessage(message,sendUserAccount);
+        });
+        saveChatWindow();
+        removeUnreadMessage(sendUserAccount);
+    }
+
+    // 将变量中的临时存储群聊信息放到当前window中
+    function showUnreadGroupMessage(groupRoom) {
+        unReadMessage[groupRoom].forEach(function(data) {
+            receiveMessage(data.msg, data.sendUserAccount);
+        });
+        saveChatWindow();
+        removeUnreadMessage(groupRoom);
+    }
+
+    // 移除变量中临时存储的信息
+    function removeUnreadMessage(sendUserAccount) {
+        if(unReadMessage[sendUserAccount]) {
+            delete unReadMessage[sendUserAccount];
+            removeRedPoint(sendUserAccount);
+        }
+    }
+
+    // 隐藏红点
+    function removeRedPoint(sendUserAccount) {
+        $(".listContent input[value="+sendUserAccount+"]")
+            .prevAll("span:last")
+            .removeClass("redPoint")
+            .text('');
+    }
+    // 发送信息
     function sendMessage() {
         var $editor = $('#editor');
         var message = $editor.val();
@@ -79,20 +215,18 @@
         scrollToBottom();
     }
 
-    function receiveMessage() {
-        var $editor = $('#editor');
-        var receiveMessage = $editor.val();
-        var bubbleMessage = addReceiveMessageBubble(receiveMessage);
+    // 接受信息
+    function receiveMessage(receiveMessage, sendUserAccount) {
+        var bubbleMessage = addReceiveMessageBubble(receiveMessage, sendUserAccount);
         $('#messageBox').append(getTimeMessage()).append(bubbleMessage);
-        $editor.val('').focus();
         scrollToBottom();
     }
 
+    // 获取聊天时间
     function getTimeMessage() {
         var $timeDiv = $("<div></div>").addClass("timeMessage").html(getFormatDate());
         return $timeDiv;
     }
-
     function getFormatDate() {
         var date = new Date();
         var month = date.getMonth() + 1;
@@ -143,16 +277,31 @@
     // 切换聊天对象
     function switchWindow() {
         $(".listContent").bind("click", function() {
+            var account = $(this).find("[name=account]").val();   // 找到当前点击的好友账号
+            $('#leftTopBox').find("[name=currentAccount]").val(account); // 将当前账号赋给右上角的信息的隐藏域
             showWindow();
+
+            // 取出聊天记录HTML
+            var chatmessage = messageInfo[account];
+            $('#messageBox').html('').html(chatmessage);
+
+            // 如果有未读信息则展示未读消息并移除红点
+            if(hasUnreadMessage($(this))) {
+                if(account.split('_')[0] === "groupChat") {
+                    showUnreadGroupMessage(account);
+                } else {
+                    showUnreadMessage(account);
+                }
+
+            }
             $(".listContent").css("background-color","#ddd");
             $(".listContent").children("div .blueBar").remove();
             if(!$(this).children("div .blueBar")[0]) {
-                var $blueBar = $("<div></div>").addClass("blueBar");
+                var $blueBar = $("<div>").addClass("blueBar");
                 $(this).append($blueBar);
             }
             $(this).css("background-color","#E7F1F6");
-            $(".nickName").text($(this).children("span").text());
-
+            $(".nickName").text($(this).children("span[class=content_name]").text());
             $('#editor').val('').focus(); // 获取焦点
         });
     }
@@ -195,29 +344,77 @@
         $bubbleDiv.append(addAvator("rightAvator")).append($bubbleSpan);
         return $bubbleDiv;
     }
+
     // 接受的信息加气泡操作
-    function addReceiveMessageBubble(HTMLMessage) {
-        var $bubbleDiv = $("<div></div>").addClass("bubbleItem");
-        var $bubbleSpan = $("<span></span>").addClass("bubble leftBubble").html(HTMLMessage);
-        var $span1 = $("<span></span>").addClass("bottomLevel");
-        var $span2 = $("<span></span>").addClass("topLevel");
+    function addReceiveMessageBubble(HTMLMessage, sendUserAccount) {
+        var $bubbleDiv = $("<div>").addClass("bubbleItem");
+        var $bubbleSpan = $("<span>").addClass("bubble leftBubble").html(HTMLMessage);
+        var $span1 = $("<span>").addClass("bottomLevel");
+        var $span2 = $("<span>").addClass("topLevel");
         $bubbleSpan.append($span1).append($span2);
-        $bubbleDiv.append(addAvator("leftAvator")).append($bubbleSpan);
+        $bubbleDiv.append(addAvator("leftAvator", sendUserAccount)).append($bubbleSpan);
         return $bubbleDiv;
     }
 
-    function addAvator(locAvator) {
-        var source = $("#avator").attr("src");
-        return $("<img>").attr("src", source).addClass(locAvator);
+
+
+
+    function addAvator(locAvator, sendUserAccount) {
+        var source ;
+        if(locAvator == "rightAvator") {
+            source = $("#avator").attr("src")
+        } else {
+            // 根据当前账户找到好友列表中的头像
+            var currentAccount = $('#leftTopBox').find("[name=currentAccount]").val();
+            // 区分群聊发送人的头像
+            if(currentAccount.split('_')[0] === "groupChat") {
+                source = $(".listContent input[value="+sendUserAccount+"]").prevAll(":last").attr("src");
+            } else {
+                source = $(".listContent input[value="+currentAccount+"]").prevAll(":last").attr("src");
+            }
+        }
+        return $("<img>").attr("src", source).addClass(locAvator).addClass("img-circle");
     }
 
+    function createFrinedList(friends) {
+        friends.forEach(function(friend) {
+            $('#listBox').append(createFriend(friend));
+        });
+    }
 
+    function createFriend(friend) {
+        // 通过类型来区分群聊私聊
+        var account = friend.type === 1 ? "groupChat_"+friend.account : friend.account;
+        var $friendDiv = $('<div>').addClass('listContent');
+        var $friendAvator = $('<img>').addClass('content_img img-circle').attr('src', friend.avator);
+        var $account = $('<input name="account" type="hidden" >').val(account);
+        var nickName = friend.friend_remark == '' ? friend.username : friend.friend_remark;
+        var $nickName = $('<span>').addClass('content_name').text(nickName);
+        var $redPoint = $('<span>');
+        return $friendDiv.append($friendAvator)
+                         .append($redPoint)
+                         .append($nickName)
+                         .append($account);
 
+    }
+
+    // 置顶好友
+    function TopFriend() {
+        var currentAccount = $('#leftTopBox').find("[name=account]").val();
+        var $currentCotent = $(".listContent input[value="+currentAccount+"]").parent();
+        $("#listBox").prepend($currentCotent);
+    }
+
+    // 保存聊天数据
+    function saveChatWindow() {
+        var account = $("#leftTopBox input").val();
+        messageInfo[account] = $('#messageBox').html();
+    }
 </script>
 
 <div id="parentBox" >
     <div id="menuBox">
-        <img id="avator" href="#" src="../images/avator/1.png">
+        <img id="avator" class="img-circle" href="#" src="<%= user.avator %>">
         <div  class="menu">
             <img id="comment" src="../images/aliIcon/comment.png" height="29px" width="29px" >
             <img id="friends" src="../images/aliIcon/friend.png" height="29px" width="29px" >
@@ -232,71 +429,88 @@
             <span class="glyphicon glyphicon-search"></span>
         </div>
         <div id="listBox" class="scroll-pane">
-            <div class="listContent">
-                <img src="../images/avator/1.png" class="content_img" >
-                <img class="online" src="../images/aliIcon/online.png">
-                <span class="content_name" >Natalie Portman</span>
-            </div>
+            <!--        <div class="listContent">
+                        <img src="" class="content_img" >
+                        <span class="content_name" >群聊</span>
+                        <input name="group_account" type="hidden">
+                        <span class=""></span>
+                    </div>
+                            <div class="listContent">
+                                    <img src="../images/avator/1.png" class="content_img" >
+                                    <span class="content_name" >Natalie Portman</span>
+                                    <span class="redPoint">2</span>
+                            </div>
+                            <div class="listContent">
+                                    <img src="../images/avator/1.png" class="content_img" >
+                                    <span class="content_name" >Natalie Portman</span>
+                                    <span class=""></span>
+                            </div>
+                                            <div class="listContent">
+                                                <img src="../images/avator/1.png" class="content_img" >
+                                                <img class="online" src="../images/aliIcon/online.png">
+                                                <span class="content_name" >Natalie Portman</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/2.png" class="content_img" >
-                <img class="online" src="../images/aliIcon/online.png">
-                <span class="content_name">Ethan Hawke</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/2.png" class="content_img" >
+                                                <img class="online" src="../images/aliIcon/online.png">
+                                                <span class="content_name">Ethan Hawke</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/3.png" class="content_img" >
-                <img class="online" src="../images/aliIcon/online.png">
-                <span class="content_name">Kevin Spacey</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/3.png" class="content_img" >
+                                                <img class="online" src="../images/aliIcon/online.png">
+                                                <span class="content_name">Kevin Spacey</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/4.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Rosamund Pike</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/4.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Rosamund Pike</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/5.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Natalie Portman</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/5.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Natalie Portman</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/6.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Robert Redford</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/6.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Robert Redford</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/7.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Scarlett Johansson</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/7.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Scarlett Johansson</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/8.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Tom Cruise</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/8.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Tom Cruise</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/9.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Eva Green</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/9.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Eva Green</span>
+                                            </div>
 
-            <div class="listContent" >
-                <img src="../images/avator/9.png" class="content_img" >
-                <img class="offline" src="../images/aliIcon/offline.png">
-                <span class="content_name">Paul Newman</span>
-            </div>
+                                            <div class="listContent" >
+                                                <img src="../images/avator/9.png" class="content_img" >
+                                                <img class="offline" src="../images/aliIcon/offline.png">
+                                                <span class="content_name">Paul Newman</span>
+                                            </div>-->
         </div>
     </div>
     <div id="leftBox" >
         <div id="leftTopBox">
             <img class="profile" src="../images/aliIcon/profile.png" alt="查看资料">
             <div class="nickName"></div>
+            <input name="currentAccount" type="hidden" value="" >
         </div>
         <div id="messageBox"></div>
         <div id="toolbar" >
@@ -308,7 +522,7 @@
             <!--<button class="btn btn-success sendBtn" type="button">发送</button>-->
             <a tabindex="0" class="btn btn-success sendBtn" role="button" data-toggle="popover" data-trigger="focus"
                placement="right" data-content="不能发送空白消息">发送</a>
-            <button class="btn" id="receiveBtn">接受数据</button>
+            <!--<button class="btn" id="receiveBtn">接受数据</button>-->
         </div>
     </div>
 </div>

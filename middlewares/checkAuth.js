@@ -5,8 +5,6 @@ module.exports = {
         }
         next();
     },
-
-
     checkUser : function(req,res,next) {
         if(req.session.user){
             return res.redirect('/chatSystem');

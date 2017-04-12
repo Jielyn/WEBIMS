@@ -4,7 +4,7 @@ var checkLogin = require('../middlewares/checkAuth').authentication;
 var checkNotLogin = require("../middlewares/checkAuth").checkUser;
 
 router.get('/',checkNotLogin,function (req, res) {
-    res.render('index', { title: 'Express' ,account:req.session.account});
+        res.render('index', { title: 'Express' ,account:req.session.account});
 });
 
 // GET /chatSystem 登录成功,跳转到聊天页面
