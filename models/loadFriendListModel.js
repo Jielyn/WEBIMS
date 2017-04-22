@@ -25,8 +25,17 @@ exports.loadFriendList = function(res, account, callback) {
     });
 };
 
-// 查询所有群组信息
+// 查询当前用户所在的群组
 
-exports.loadGroupList = function() {
-
+exports.loadGroupList = function(account, callback) {
+    pool.getConnection(function(err, connection) {
+        var sql = " SELECT CONCAT('groupChat_', group_id) AS group_id " +
+                  " FROM user_group WHERE account = ?";
+        var arr = [account];
+        connection.query(sql, arr, function(err, rows) {
+            if(err) throw err;
+            callback(rows);
+            connection.release();
+        });
+    });
 };

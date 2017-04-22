@@ -18,17 +18,33 @@
     <script src="../scrollbar/script/jquery.jscrollpane.min.js"></script>
     <!-- socket.io -->
     <script src="/socket.io/socket.io.js" ></script>
+
+    <!-- toastr -->
+    <link rel="stylesheet" href="../toastr/toastr.min.css">
+    <script src="../toastr/toastr.min.js"></script>
+
+    <script src="/scripts/addFriends.js" ></script>
+    <link rel="stylesheet" href="/stylesheets/addFriendModelStyle.css">
+
+    <script src="/scripts/addGroupChat.js" ></script>
+    <link rel="stylesheet" href="/stylesheets/addGroupChat.css">
+
+    <link rel="stylesheet" href="/font-awesome/font-awesome.min.css">
+    <link rel="stylesheet" href="/awesome-bootstrap-checkbox/build.css">
 </head>
 <body>
 <script>
     var messageInfo = {};   // 用于存储聊天记录
     var unReadMessage = {}; // 用于存储未读消息
-//    var unReadGroupMessage = {}; // 用于存储群聊未读消息
     $(function() {
+
         // 清楚隐藏域中的缓存
         $('input[type=hidden]').val('');
         var account = "<%= user.account %>";
         var socket = io();
+        openAddFriend(socket, account); // 好友添加模块
+        initAddGroupChat(account);             // 创建群聊模块
+        loadFriendList(account);        // 加载好友列表
 
         // 发送当前用户的登录信息存储于后台
         socket.emit('loginInfo', account);
@@ -85,22 +101,6 @@
                 .text(unReadMessage[sendUserAccount].length);
         }
 
-        // 加载好友列表信息
-        $.ajax({
-            url: "/loadFriendList",
-            data: {
-                account: account
-            },
-            type: 'POST',
-            dataType: 'JSON',
-            success: function(friends) {
-                createFrinedList(friends);
-                initListSlider();
-                hideWindow();
-                switchWindow();
-                changeEmojiColor();
-            }
-        });
 
         // 编辑器背景颜色改变
         $("#editor").on({
@@ -163,6 +163,25 @@
         });
 
     });
+
+    // 加载好友列表信息
+    function loadFriendList(account) {
+        $.ajax({
+            url: "/loadFriendList",
+            data: {
+                account: account
+            },
+            type: 'POST',
+            dataType: 'JSON',
+            success: function(friends) {
+                createFrinedList(friends);
+                initListSlider();
+                hideWindow();
+                switchWindow();
+                changeEmojiColor();
+            }
+        });
+    }
 
     // 判断当前点击用户是否有未读消息
     function hasUnreadMessage($obj) {
@@ -356,9 +375,6 @@
         return $bubbleDiv;
     }
 
-
-
-
     function addAvator(locAvator, sendUserAccount) {
         var source ;
         if(locAvator == "rightAvator") {
@@ -395,7 +411,6 @@
                          .append($redPoint)
                          .append($nickName)
                          .append($account);
-
     }
 
     // 置顶好友
@@ -420,6 +435,7 @@
             <img id="friends" src="../images/aliIcon/friend.png" height="29px" width="29px" >
             <img id="friend_add" src="../images/aliIcon/friend_add.png" height="29px" width="29px" >
             <img id="setting" src="../images/aliIcon/set.png" height="29px" width="29px" >
+            <!--<span class="redPoint" >1</span>-->
         </div>
     </div>
     <div id="middleBox">
@@ -427,83 +443,11 @@
             <input id="queryContent" type="text" class="form-control" aria-describedby="sizing-addon3"
                    placeholder="搜索">
             <span class="glyphicon glyphicon-search"></span>
+            <button id="createGroupChatBtn" type="button" class="btn btn-default"  data-toggle="modal" data-target="#createGroupChatModel">
+                <img src="../images/aliIcon/add.png"  alt="发起群聊" title="发起群聊">
+            </button>
         </div>
         <div id="listBox" class="scroll-pane">
-            <!--        <div class="listContent">
-                        <img src="" class="content_img" >
-                        <span class="content_name" >群聊</span>
-                        <input name="group_account" type="hidden">
-                        <span class=""></span>
-                    </div>
-                            <div class="listContent">
-                                    <img src="../images/avator/1.png" class="content_img" >
-                                    <span class="content_name" >Natalie Portman</span>
-                                    <span class="redPoint">2</span>
-                            </div>
-                            <div class="listContent">
-                                    <img src="../images/avator/1.png" class="content_img" >
-                                    <span class="content_name" >Natalie Portman</span>
-                                    <span class=""></span>
-                            </div>
-                                            <div class="listContent">
-                                                <img src="../images/avator/1.png" class="content_img" >
-                                                <img class="online" src="../images/aliIcon/online.png">
-                                                <span class="content_name" >Natalie Portman</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/2.png" class="content_img" >
-                                                <img class="online" src="../images/aliIcon/online.png">
-                                                <span class="content_name">Ethan Hawke</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/3.png" class="content_img" >
-                                                <img class="online" src="../images/aliIcon/online.png">
-                                                <span class="content_name">Kevin Spacey</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/4.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Rosamund Pike</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/5.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Natalie Portman</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/6.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Robert Redford</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/7.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Scarlett Johansson</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/8.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Tom Cruise</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/9.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Eva Green</span>
-                                            </div>
-
-                                            <div class="listContent" >
-                                                <img src="../images/avator/9.png" class="content_img" >
-                                                <img class="offline" src="../images/aliIcon/offline.png">
-                                                <span class="content_name">Paul Newman</span>
-                                            </div>-->
         </div>
     </div>
     <div id="leftBox" >
@@ -518,13 +462,127 @@
         </div>
         <div id="inputBox">
             <textarea id="editor" ></textarea>
-            <!--<img class="sendBtn" src="../images/aliIcon/send1.png">-->
-            <!--<button class="btn btn-success sendBtn" type="button">发送</button>-->
             <a tabindex="0" class="btn btn-success sendBtn" role="button" data-toggle="popover" data-trigger="focus"
                placement="right" data-content="不能发送空白消息">发送</a>
-            <!--<button class="btn" id="receiveBtn">接受数据</button>-->
         </div>
     </div>
 </div>
+<!-- 好友添加模态框 -->
+<div id="addFriendModel" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新的朋友</h4>
+            </div>
+            <div class="modal-body">
+            <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#queryInfo" data-toggle="tab">添加朋友</a></li>
+            <li><a href="#checkInfo" data-toggle="tab">验证消息</a></li>
+            </ul>
+            <div class="tab-content" >
+                <div id="queryInfo" class="tab-pane fade in active" >
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="输入要查找的账号">
+                        <span class="input-group-btn">
+                                <button id="findUserBtn" class="btn btn-success" type="button">查找</button>
+                            </span>
+                    </div>
+                    <div class="userInfo">
+                        <img src=""  alt="头像">
+                        <table>
+                            <tr>
+                                <td>账 号</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>昵 称</td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        <a href="#" class="btn btn-success" role="button">添加好友</a>
+                        <a href="#" class="btn btn-danger disabled" role="button">已添加</a>
+                    </div>
+                    <div class="userEmpty">
+                        <h3>没有找到符合条件的用户</h3>
+                    </div>
+
+                </div> <!-- #queryInfo  -->
+                <div class="tab-pane fade" id="checkInfo">
+                    <div class="checkInfo" >
+                        <table class="table table-hover" >
+                            <caption><h4>下列用户想添加您为好友</h4></caption>
+                            <thead>
+                            <tr>
+                                <th>头像</th>
+                                <th>账号</th>
+                                <th>昵称</th>
+                                <th>同意</th>
+                                <th>拒绝</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- #checkInfo -->
+            </div>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- 发起群聊模态框 -->
+<div id="createGroupChatModel" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">创建群聊</h4>
+            </div>
+            <div class="modal-body">
+                <div id="createGroupChat" >
+                    <div class="leftList" >
+                        <input type="text" class="form-control searchContent" aria-describedby="sizing-addon3" placeholder="搜索">
+                        <span class="glyphicon glyphicon-search"></span>
+                        <div class="leftFriendList">
+                            <div class="leftFriend">
+                                <img class="img-circle leftFriendImg" src="../images/avator/2.png"><span class="leftFriendUsername" >林林林</span><input name="account" type="hidden" value="linjie">
+                                <div class="checkbox checkbox-success checkbox-circle">
+                                    <input type="checkbox" id="checkbox1" >
+                                    <label for="checkbox1"></label>
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div class="leftFriend">
+                                <img class="img-circle leftFriendImg" src="../images/avator/3.png"><span class="leftFriendUsername" >小王</span><input name="account" type="hidden" value="linjie">
+                                <div class="checkbox checkbox-success checkbox-circle">
+                                    <input type="checkbox" id="checkbox2" >
+                                    <label for="checkbox2"></label>
+                                </div>
+                            </div>
+                        </div><!-- leftFriendList -->
+
+<!--                            <div class="checkbox checkbox-success">
+                                <input type="checkbox" id="checkbox2" >
+                                <label for="checkbox2">
+                                    Check me out
+                                </label>
+                            </div>-->
+                    </div>
+                    <!--<hr>-->
+                    <!--<div class="rightList" ></div>-->
+                </div> <!-- #createGroupChat -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div><!-- /.modal-content -->
+
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>

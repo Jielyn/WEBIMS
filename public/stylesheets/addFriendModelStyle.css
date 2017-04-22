@@ -1,0 +1,96 @@
+#queryInfo {
+    width: 85%;
+    height: 400px;
+    text-align: center;
+    margin-left: 8%;
+}
+
+#queryInfo img {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    right: 21px;
+}
+
+#queryInfo .userInfo {
+    margin-top: 10%;
+}
+
+#queryInfo .userInfo p {
+    margin-right: 15%;
+    margin-top: 1%;
+    color: gray;
+    background-color: #1b6d85;
+}
+
+#queryInfo .userInfo span {
+    text-align: center;
+}
+
+.input-group {
+    top: 9%;
+}
+
+.userInfo table {
+    margin-right:auto;
+    margin-left:auto;
+    table-layout: fixed;
+    width: 300px;
+}
+
+.userInfo table td {
+    padding: 7%;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.userInfo table td:first-child{
+    color: gray;
+}
+
+.userInfo table td:nth-child(2){
+    text-align: left;
+}
+
+.userInfo a {
+    position: relative;
+    right: 21px;
+}
+
+.userEmpty h3 {
+    position: relative;
+    top: 60px;
+}
+
+.menu .redPoint {
+    font-family:sans-serif;
+    display:inline-block;
+    height:16px;
+    width:16px;
+    line-height:16px;
+    text-align:center;
+    font-size:89%;
+    border-radius:16px;
+    color:#fff;
+    background:red;
+    position: relative;
+    bottom: 11px;
+    left: 19px;
+}
+
+#checkInfo .checkInfo {
+    height: 400px;
+}
+
+#checkInfo .checkInfo caption{
+    text-align: center;
+}
+
+.checkInfo img {
+    width: 34px;
+    height: 34px;
+}
+
+
+
+

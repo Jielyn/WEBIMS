@@ -5,13 +5,20 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require("express-session");
-var mysql = require("mysql");
 var ejs = require("ejs");
 
 // 创建项目实例
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+
+var sessionMiddleware = session({
+    secret: '123456',
+    name: 'WEBIMS',
+    cookie: {maxAge:null},
+    resave: true,
+    saveUninitialized: true
+});
 
 app.set('port', process.env.PORT || 5000);
 
@@ -35,13 +42,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // 定义cookie解析器
 app.use(cookieParser());
 
-app.use(session({
-    secret: '123456',
-    name: 'WEBIMS',
-    cookie: {maxAge:null},
-    resave: true,
-    saveUninitialized: true
-}));
+app.use(sessionMiddleware);
+
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
 
 app.use(function (req,res,next) {
     res.locals.user = req.session.user;
@@ -56,13 +61,17 @@ var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');                        // 登陆路由
 var regRouter = require('./routes/register');                       // 注册路由
 var loadFriendListRouter = require('./routes/loadFriendList');      // 加载好友列表路由
-var groupChatRouter = require('./routes/groupChat')(io);            // 通讯
+var userRouter = require('./routes/user')(io);                      // 通讯
+var addFriendsRouter = require('./routes/addFriends');
+var addGroupChat = require('./routes/addGroupChat');
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/reg', regRouter);
 app.use('/loadFriendList', loadFriendListRouter);
-app.use('/', groupChatRouter);
+app.use('/', userRouter);
+app.use('/addFriends', addFriendsRouter);
+app.use('/', addGroupChat);
 
 server.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));

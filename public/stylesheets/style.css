@@ -75,8 +75,9 @@ body {
   background-color: #EEEBE9;
   height: 60px;
 }
+
 /* 放大镜图标 */
-.glyphicon-search {
+#queryBox .glyphicon-search {
   left: 192px;
   top: 4px;
   color: gray;
@@ -85,9 +86,26 @@ body {
 #queryContent {
   position: relative;
   top: 24px;
-  left: 25px;
+  left: 22px;
   width: 190px;
   height: 25px;
+}
+
+#createGroupChatBtn {
+  float: right;
+  width: 0px;
+  height: 26px;
+  position: relative;
+  right: 6px;
+  bottom: 1px;
+}
+
+#createGroupChatBtn img {
+  width: 13px;
+  height: 13px;
+  position: relative;
+  right: 6px;
+  bottom: 5px;
 }
 
 #listBox {
@@ -250,7 +268,7 @@ body {
 }
 
 /* 小红点 */
-.redPoint {
+.listContent .redPoint {
   font-family:sans-serif;
   display:inline-block;
   height:16px;
