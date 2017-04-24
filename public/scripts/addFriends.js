@@ -17,33 +17,7 @@ function openAddFriend(socket, account) {
 
     // 查找好友
     $('#findUserBtn').on({
-        click: function() {
-            var account = $('#queryInfo input').val();
-            $.ajax({
-                url:'/findUser',
-                type: 'POST',
-                dataType: 'JSON',
-                data: {
-                    account: account
-                },
-                success: function(user) {
-                    if(user) {
-                        hideUserEmpty();
-                        showUser(user);
-                        if(user.type == 0) {
-                            $('.userInfo .btn-success').hide();
-                            $('.userInfo .btn-danger').show();
-                        } else if(user.type == 1) {
-                            $('.userInfo .btn-success').show();
-                            $('.userInfo .btn-danger').hide();
-                        }
-                    } else {
-                        showUserEmpty();
-                        $('.userInfo').hide();
-                    }
-                }
-            })
-        }
+        click: findUserToAdd
     });
 /**********************************************添加好友*****************************************************/
 
@@ -81,11 +55,54 @@ function openAddFriend(socket, account) {
     socket.on('acceptAddUser_beAdd', function(argeeAccount) {
         // 提示对方同意添加你为好友
         toastr.success('账户为'+argeeAccount+'的用户同意添加您为好友', '提示');
+        findUserToAdd();
         // 刷新好友列表
         $('#listBox').html('');
         loadFriendList(account);
     });
 
+    socket.on('refuseAddUser_refuse', function(account_friend) {
+        // 提示添加好友成功
+        toastr.success('您已拒绝添加账户为'+account_friend+'的用户', '提示');
+        // 刷新未处理请求
+        if($('.checkInfo table tbody tr').length) {
+            $('.checkInfo table tbody').html('');
+        }
+        queryUnhandleRequest(socket);
+    });
+
+    socket.on('refuseAddUser_beRefuse', function(argeeAccount) {
+        // 提示对方拒绝你为好友
+        toastr.info('账户为'+argeeAccount+'的用户拒绝添加您为好友', '提示');
+    });
+}
+
+function findUserToAdd() {
+    var account = $('#queryInfo input').val();
+    $.ajax({
+        url:'/findUser',
+        type: 'POST',
+        dataType: 'JSON',
+        data: {
+            account: account
+        },
+        success: function(user) {
+            if(user) {
+                hideUserEmpty();
+                showUser(user);
+                if(user.type == 0) {
+                    $('.userInfo .btn-success').hide();
+                    $('.userInfo .btn-danger').show();
+                } else if(user.type == 1) {
+                    $('.userInfo .btn-success').show();
+                    $('.userInfo .btn-danger').hide();
+                }
+            } else {
+                showUserEmpty();
+                $('.userInfo').hide();
+            }
+        }
+    });
 }
 
 function showUser(user) {
@@ -145,7 +162,7 @@ function showUnhandleRequest(data, socket) {
 
     // 拒绝请求
     $('#checkInfo .btn-danger').on('click', function() {
-
+        socket.emit('refuseAddUser', {account: $(this).parent().prevAll('td:nth-child(2)').text()});
     });
 
 }

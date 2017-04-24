@@ -3,6 +3,7 @@ var router = express.Router();
 var checkLogin = require('../middlewares/checkAuth').authentication;
 var findGroupRoom = require('../models/loadFriendListModel').loadGroupList;
 var userModel = require('../models/userModel');
+var addGroupChatModel = require('../models/addGroupChatModel');
 global.users = {};  // 用户存储用户信息和用户被分配到的socket
 
 module.exports = function(io) {
@@ -15,14 +16,7 @@ module.exports = function(io) {
                 socket.account = account;           // 将当前账户存入被分配的socket中
                 global.users[account] = socket.id;  // 将socket和account关联
             }
-
-            // 查询用户所在群聊房间并加入
-            findGroupRoom(account,function(rooms) {
-                rooms.forEach(function(room) {
-                    socket.join(room.group_id);
-                });
-            });
-
+            joinRoom(account);
         });
 
         // 用户断开时移除用户信息
@@ -53,6 +47,16 @@ module.exports = function(io) {
                 console.log('发送离线消息');
             }
         });
+
+        // 查询用户所在群聊房间并加入
+        function joinRoom(account) {
+            findGroupRoom(account,function(rooms) {
+                rooms.forEach(function(room) {
+                    var userSocket = getSocketByAccount(account);
+                    userSocket.join(room.group_id);
+                });
+            });
+        }
 /***********************************************添加好友******************************************************/
         router.post('/findUser', function(req, res) {
             var account = req.body.account; // 被查找的用户
@@ -138,11 +142,51 @@ module.exports = function(io) {
         });
 
         // 拒绝添加请求
+        socket.on('refuseAddUser', function(data) {
+            var account_friend = data.account;  // 被拒绝的账户
+            var account = socket.request.session.user.account;  // 当前账户
+            // 移除未处理请求
+            userModel.removeUnhandleRequest(account_friend, account,function() {
+                socket.emit('refuseAddUser_refuse', account_friend);   // 发送给发起拒绝的账户
+                if(users[account_friend]) {
+                    var accountFriendSocket =  getSocketByAccount(account_friend);
+                    accountFriendSocket.emit('refuseAddUser_beRefuse', account);   // 发送给被拒绝的账户
+                }
+            });
+        });
 
         // 通过账户获取socket
         function getSocketByAccount(account) {
             return io.sockets.sockets[users[account]];
         }
+
+/****************************************************创建群聊******************************************************/
+        // POST /queryFriends 查询好友用于创建群聊
+        router.post('/queryFriends', function(req, res) {
+            var account = req.body.account;
+            addGroupChatModel.queryFriends(account, function(friends) {
+                res.send(friends);
+            });
+        });
+
+        // POST /createGroupChat 查询好友用于创建群聊
+        router.post('/createGroupChat', function(req, res) {
+            var account = req.body['account'];
+            var friends = req.body['friends[]'];
+            addGroupChatModel.createGroupChat(account, friends, function() {
+                joinRoom(account);
+                // 给被拉入群聊的在线用户发送信息并刷新他们的好友列表
+                delete friends[friends.length - 1]; // 移除最后一个元素，因为最后一个账户已经刷新过好友列表
+                friends.forEach(function(friend) {
+                    if(users[friend]) {
+                        var friendSocket = getSocketByAccount(friend);
+                        friendSocket.emit('newGroupChat');
+                        joinRoom(friend);
+                    }
+                });
+                res.send();
+            });
+        });
     });
 
     return router;

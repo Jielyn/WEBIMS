@@ -95,7 +95,7 @@
 
                 <tr>
                   <td>
-                    <div id="accountCheck" style="color:#695F56">账号必须是英文</div>
+                    <div id="accountCheck" style="color:#695F56"></div>
                   </td>
                 </tr>
                 <tr>
@@ -108,7 +108,7 @@
 
                 <tr>
                   <td>
-                    <div id="nameCheck" style="color:#695F56">昵称是必填项</div>
+                    <div id="nameCheck" style="color:#695F56"></div>
                   </td>
                 </tr>
                 <tr>
@@ -120,7 +120,7 @@
                 </tr>
                 <tr>
                   <td>
-                    <div id="psdCheck" style="color:#695F56">密码必填项</div>
+                    <div id="psdCheck" style="color:#695F56"></div>
                   </td>
                 </tr>
                 <tr>
@@ -184,54 +184,80 @@
         $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',clign:'center'});
 
 
-        //注册页面
+/*        //注册页面
         $("#registeA").bind("click",function(){
             $("#accountCheck").html("账号必须是英文").attr("class","").css("color","#695F56").show();
             $("#nameCheck").html("昵称是必填项").attr("class","").css("color","#695F56").show();
             $("#psdCheck").html("密码必填项").attr("class","").css("color","#695F56").show();
-
-        });
+        });*/
 
         //注册校验
-        $("#account").bind("blur",function(){
+        $("#account").bind("blur",accountReg);  // 账号校验
+
+        function accountReg() {
             var account = $("#account").val();
             var reg = /^[a-z,A-Z]+$/;
             if(account.trim().length < 0 || account.trim() == '') {
                 $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("账号不能为空").attr("class","alert alert-danger");
+                return false;
             }else if(!reg.test(account)){
                 $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("必须是英文").attr("class","alert alert-danger");
+                return false;
             }else if(account.trim().length > 12 || account.trim().length < 6){
                 $("#accountCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("账号长度6到12位").attr("class","alert alert-danger");
+                return false;
             }else{
                 $("#accountCheck").hide();
+                return true;
             }
+        }
 
-        });//账号校验
+        $("#name").bind("blur",nameReg);  // 昵称校验
 
-        $("#name").bind("blur",function(){
+        function nameReg() {
             var name = $("#name").val();
             if(name.trim().length < 0 || name.trim() == ''){
                 $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("昵称不能为空").attr("class","alert alert-danger");
+                return false;
             }else if(name.trim().length > 12 || name.trim().length < 6){
                 $("#nameCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("昵称长度6到12位").attr("class","alert alert-danger");
+                return false;
             }else{
                 $("#nameCheck").hide();
+                return true;
             }
+        }
 
-        });//昵称校验
+        $("#psd").bind("blur",psdReg);//密码校验
 
-        $("#psd").bind("blur",function(){
+        function psdReg() {
             var psd = $("#psd").val();
             var reg = /^[0-9A-Za-z]{6,12}$/;
             if(psd.trim().length < 0 || psd.trim() == ''){
                 $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不能为空").attr("class","alert alert-danger");
+                return false;
             }else if(!reg.test(psd)){
                 $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("又6到12字母或数字组成").attr("class","alert alert-danger");
+                return false;
             }else{
                 $("#psdCheck").hide();
+                return true;
             }
-        });//密码校验
+        }
 
+        $("#psdConfirm").bind("blur", psdTwice);// 密码校验
+
+        function psdTwice() {
+            var password = $("#psd").val();
+            var psdConfirm = $("#psdConfirm").val();
+            if(password != psdConfirm){
+                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不一致").attr("class","alert alert-danger").show();
+                return false;
+            } else {
+                $("#psdCheck").hide();
+                return true;
+            }
+        }
 
         /*
         * 登录
@@ -268,17 +294,15 @@
         * 注册
         * */
         $("#regBtn").bind("click",function () {
+            if(!accountReg() || !nameReg() || !psdReg() || !psdTwice()) {
+                alert('ssss');
+                return false;
+            }
             var account = $("#account").val();
             var username = $("#name").val();
             var password = $("#psd").val();
             var psdConfirm = $("#psdConfirm").val();
-            console.log("注册参数：" + account + ":" + username + ":" +　password + ":" + psdConfirm);
 
-            if(password != psdConfirm){
-                alert("不一致  ");
-                $("#psdCheck").css({padding:"4px",fontSize:"12px",width:'150px',color:'red'}).html("密码不一致").attr("class","alert alert-danger").show();
-                return;
-            }
             $.ajax({
                 url:'/reg',
                 data:{
@@ -307,7 +331,6 @@
 
             });
         });
-
 
         //点击回车键 登录
         $('body').keydown(function () {

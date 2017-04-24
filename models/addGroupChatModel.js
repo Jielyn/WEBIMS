@@ -18,3 +18,34 @@ exports.queryFriends = function(account, callback) {
         });
     });
 };
+
+exports.createGroupChat = function(account, friends, callback) {
+    pool.getConnection(function(err, connection) {
+        var sql1 = " INSERT INTO group_info (group_name) SELECT " +
+                   " (CONCAT((SELECT username FROM USER WHERE account = ?),'的群聊')) ";
+        var params1 = [account];
+        connection.query(sql1, params1, function(err, rows) {
+            if(err) {
+                connection.rollback(function() {
+                    throw err;
+                });
+            }
+            var group_id = rows.insertId;
+            var params2 = [];
+            friends.forEach(function(friend) {
+                params2.push([friend, group_id]);
+            });
+            console.log(params2);
+            var sql2 = " INSERT INTO user_group (account, group_id) VALUES ?";
+            connection.query(sql2, [params2], function(err) {
+                if(err) {
+                    connection.rollback(function() {
+                        throw err;
+                    });
+                }
+                callback();
+                connection.release();
+            });
+        });
+    });
+}

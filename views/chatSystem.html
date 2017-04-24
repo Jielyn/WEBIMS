@@ -28,7 +28,7 @@
 
     <script src="/scripts/addGroupChat.js" ></script>
     <link rel="stylesheet" href="/stylesheets/addGroupChat.css">
-
+    <!-- awesome-bootstrap-checkbox -->
     <link rel="stylesheet" href="/font-awesome/font-awesome.min.css">
     <link rel="stylesheet" href="/awesome-bootstrap-checkbox/build.css">
 </head>
@@ -43,7 +43,7 @@
         var account = "<%= user.account %>";
         var socket = io();
         openAddFriend(socket, account); // 好友添加模块
-        initAddGroupChat(account);             // 创建群聊模块
+        initAddGroupChat(socket, account);             // 创建群聊模块
         loadFriendList(account);        // 加载好友列表
 
         // 发送当前用户的登录信息存储于后台
@@ -100,7 +100,6 @@
                 .prevAll("span:last")
                 .text(unReadMessage[sendUserAccount].length);
         }
-
 
         // 编辑器背景颜色改变
         $("#editor").on({
@@ -547,13 +546,12 @@
                         <input type="text" class="form-control searchContent" aria-describedby="sizing-addon3" placeholder="搜索">
                         <span class="glyphicon glyphicon-search"></span>
                         <div class="leftFriendList">
-                            <div class="leftFriend">
+ <!--                           <div class="leftFriend">
                                 <img class="img-circle leftFriendImg" src="../images/avator/2.png"><span class="leftFriendUsername" >林林林</span><input name="account" type="hidden" value="linjie">
                                 <div class="checkbox checkbox-success checkbox-circle">
                                     <input type="checkbox" id="checkbox1" >
                                     <label for="checkbox1"></label>
                                 </div>
-
                             </div>
                             <hr>
                             <div class="leftFriend">
@@ -562,22 +560,13 @@
                                     <input type="checkbox" id="checkbox2" >
                                     <label for="checkbox2"></label>
                                 </div>
-                            </div>
-                        </div><!-- leftFriendList -->
-
-<!--                            <div class="checkbox checkbox-success">
-                                <input type="checkbox" id="checkbox2" >
-                                <label for="checkbox2">
-                                    Check me out
-                                </label>
                             </div>-->
+                        </div><!-- .leftFriendList -->
                     </div>
-                    <!--<hr>-->
-                    <!--<div class="rightList" ></div>-->
                 </div> <!-- #createGroupChat -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success">确认</button>
+                <button id="confirmBtn" type="button" class="btn btn-success">确认</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
             </div>
         </div><!-- /.modal-content -->
